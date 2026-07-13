@@ -5,27 +5,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>EchoPath Visual Diagnostic Demo v0</title>
   <style>
-    :root { color-scheme: dark; --bg:#0b1020; --panel:#121a33; --ink:#f2f6ff; --muted:#9fb0d0; --line:#283657; --green:#5ee28f; --red:#ff6b6b; --blue:#62a8ff; --gold:#ffd66b; --violet:#b58cff; --cyan:#65f2ff; }
+    :root { color-scheme: dark; --bg:#0b1020; --panel:#121a33; --ink:#f2f6ff; --muted:#aab7d6; --line:#283657; --green:#5ee28f; --red:#ff6b6b; --blue:#62a8ff; --gold:#ffd66b; --violet:#b58cff; --cyan:#65f2ff; }
     * { box-sizing: border-box; }
-    body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: radial-gradient(circle at top left, #172349, var(--bg) 45%); color:var(--ink); }
-    header { padding: 28px 28px 16px; border-bottom:1px solid var(--line); }
-    h1 { margin:0 0 8px; font-size:clamp(1.7rem, 4vw, 2.8rem); }
-    h2 { margin:0 0 12px; font-size:1.05rem; }
-    p { color:var(--muted); line-height:1.55; }
-    main { display:grid; grid-template-columns:minmax(320px, 1.2fr) minmax(280px, .8fr); gap:18px; padding:18px; }
-    .panel { background:rgba(18,26,51,.92); border:1px solid var(--line); border-radius:18px; padding:16px; box-shadow:0 12px 40px rgba(0,0,0,.25); }
-    #scene { width:100%; height:min(72vh, 720px); background:#071020; border:1px solid var(--line); border-radius:14px; display:block; }
-    .legend { display:grid; gap:8px; margin-top:12px; color:var(--muted); font-size:.92rem; }
+    body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: radial-gradient(circle at top left, #172349, var(--bg) 48%); color:var(--ink); }
+    header { padding: 28px 22px 16px; border-bottom:1px solid var(--line); }
+    h1 { margin:0 0 8px; font-size:clamp(1.85rem, 6vw, 3rem); line-height:1.05; letter-spacing:-.02em; }
+    h2 { margin:0 0 12px; font-size:1.1rem; }
+    h3 { margin:0 0 8px; }
+    p { color:var(--muted); line-height:1.58; }
+    main { display:grid; grid-template-columns:minmax(320px, 1.25fr) minmax(280px, .75fr); gap:18px; padding:18px; }
+    .panel { background:rgba(18,26,51,.93); border:1px solid var(--line); border-radius:18px; padding:16px; box-shadow:0 12px 40px rgba(0,0,0,.25); }
+    .canvas-scroll { overflow-x:auto; border-radius:14px; border:1px solid var(--line); background:#071020; }
+    #scene { width:1100px; height:760px; background:#071020; display:block; }
+    .mobile-hint { display:none; color:var(--gold); font-size:.95rem; margin:10px 0 0; }
+    .legend { display:grid; gap:8px; margin-top:12px; color:var(--muted); font-size:.95rem; }
     .swatch { width:14px; height:14px; display:inline-block; border-radius:4px; margin-right:8px; vertical-align:-2px; }
-    .cards { display:grid; gap:12px; }
-    .card { padding:12px; border:1px solid var(--line); border-radius:14px; background:#0e1730; }
-    .card strong { display:block; margin-bottom:6px; }
+    .cards, .mobile-summary { display:grid; gap:12px; }
+    .card, .mini { padding:13px; border:1px solid var(--line); border-radius:14px; background:#0e1730; }
+    .card strong, .mini strong { display:block; margin-bottom:6px; color:var(--ink); }
     code { color:var(--cyan); background:#081126; padding:2px 6px; border-radius:6px; }
     footer { padding: 18px 28px 30px; color:var(--muted); }
     .pill { display:inline-flex; margin:0 8px 8px 0; padding:6px 10px; border:1px solid var(--line); border-radius:999px; }
     .markers { display:none; }
     a { color:var(--cyan); }
-    @media (max-width: 900px) { main { grid-template-columns:1fr; } #scene { height:560px; } }
+    .mobile-summary { display:none; margin-top:14px; }
+    .rail { display:grid; grid-template-columns: 18px 1fr; gap:10px; align-items:start; }
+    .dot { width:14px; height:14px; border-radius:4px; margin-top:4px; }
+    .boundary-box { border-left: 4px solid var(--gold); padding-left: 14px; }
+    @media (max-width: 900px) {
+      main { grid-template-columns:1fr; padding:14px; }
+      header { padding:24px 16px 14px; }
+      #scene { width:980px; height:700px; }
+      .mobile-hint, .mobile-summary { display:grid; }
+      .canvas-scroll { -webkit-overflow-scrolling: touch; }
+    }
   </style>
 </head>
 <body>
@@ -37,13 +50,23 @@
   <main>
     <section class="panel">
       <h2>Spatial Field Projection</h2>
-      <canvas id="scene" width="1100" height="760" aria-label="Visual diagnostic projection"></canvas>
+      <div class="canvas-scroll" aria-label="Horizontally scrollable diagnostic canvas">
+        <canvas id="scene" width="1100" height="760" aria-label="Visual diagnostic projection"></canvas>
+      </div>
+      <p class="mobile-hint">Mobile note: swipe the diagram left/right to inspect labels. A simplified readout is below.</p>
       <div class="legend">
         <span><i class="swatch" style="background:var(--green)"></i>inside / accepted / clear</span>
         <span><i class="swatch" style="background:var(--gold)"></i>intersecting / candidate / repair path</span>
         <span><i class="swatch" style="background:var(--red)"></i>outside / rejected / red carry</span>
         <span><i class="swatch" style="background:var(--blue)"></i>blue carry / boundary retained</span>
         <span><i class="swatch" style="background:var(--violet)"></i>Q-RRG bridge / fallback event</span>
+      </div>
+
+      <div class="mobile-summary">
+        <div class="mini rail"><i class="dot" style="background:var(--green)"></i><p><strong>AABB classify</strong> Objects are resolved, carried, or marked as boundary cases.</p></div>
+        <div class="mini rail"><i class="dot" style="background:var(--blue)"></i><p><strong>Segment / beam carry</strong> Cross-boundary beams are retained instead of silently discarded.</p></div>
+        <div class="mini rail"><i class="dot" style="background:var(--cyan)"></i><p><strong>SPEC-005 cull</strong> The candidate window shows what survives and what can be skipped.</p></div>
+        <div class="mini rail"><i class="dot" style="background:var(--violet)"></i><p><strong>Q-RRG repair</strong> Route events project bridge accept, reject, and fallback behavior.</p></div>
       </div>
     </section>
 
@@ -52,7 +75,8 @@
       <div class="card" data-demo-section="SegmentBeam"><strong>Segment / Beam Boundary</strong><p>Clean beams plus red / blue carry, face, center, and overflow cases.</p></div>
       <div class="card" data-demo-section="Spec005Culling"><strong>SPEC-005 Culling / Frustum</strong><p>Culling region, candidate survivors, inside / intersecting / outside classifications, and skipped regions.</p></div>
       <div class="card" data-demo-section="QrrgRepair"><strong>Q-RRG Repair Events</strong><p>Bridge accept, bridge reject, repair fail, and fallback events.</p></div>
-      <div class="card"><strong>Public-safe mirror</strong><p>This repo hosts only the visual surface. The private lab remains the source of truth.</p></div>
+      <div class="card boundary-box"><strong>What this shows</strong><p>Preconditioning decides relevance, culling skips safely, carry preserves boundary truth, and Q-RRG repair responds to structure.</p></div>
+      <div class="card"><strong>What this does not prove</strong><p>No production runtime claim, no private kernel exposure, no renderer/GPU integration, and no public SDK claim.</p></div>
     </aside>
   </main>
 
@@ -77,6 +101,9 @@
     INSIDE_INTERSECTING_OUTSIDE_SECTION
     QRRG_REPAIR_SECTION
     BRIDGE_ACCEPT_REJECT_FALLBACK_SECTION
+    MOBILE_PRESENTATION_POLISH_V01
+    WHAT_THIS_SHOWS_SECTION
+    WHAT_THIS_DOES_NOT_PROVE_SECTION
     NO_BLENDER_DEPENDENCY
     NO_OGRE_DEPENDENCY
     NO_OPENGL_DEPENDENCY
@@ -86,44 +113,44 @@
   <script>
     const canvas = document.getElementById('scene');
     const ctx = canvas.getContext('2d');
-    const colors = { inside:'#5ee28f', red:'#ff6b6b', blue:'#62a8ff', gold:'#ffd66b', violet:'#b58cff', cyan:'#65f2ff', line:'#44557f', text:'#f2f6ff', muted:'#9fb0d0' };
+    const colors = { inside:'#5ee28f', red:'#ff6b6b', blue:'#62a8ff', gold:'#ffd66b', violet:'#b58cff', cyan:'#65f2ff', line:'#44557f', text:'#f2f6ff', muted:'#aab7d6' };
     const sx = v => 90 + v * 760;
     const sy = v => 70 + v * 600;
-    const label = (text, x, y, color = colors.text) => { ctx.fillStyle = color; ctx.font = '16px ui-sans-serif, system-ui'; ctx.fillText(text, x, y); };
+    const label = (text, x, y, color = colors.text, size = 16) => { ctx.fillStyle = color; ctx.font = `${size}px ui-sans-serif, system-ui`; ctx.fillText(text, x, y); };
 
     const aabbs = [
-      ['resolved', .12, .18, .14, .12, colors.inside],
-      ['red carry', .44, .17, .14, .12, colors.red],
-      ['blue carry', .61, .18, .14, .12, colors.blue],
-      ['center overflow', .49, .38, .10, .10, colors.violet]
+      ['resolved', .12, .18, .14, .12, colors.inside, -18],
+      ['red carry', .44, .17, .14, .12, colors.red, 22],
+      ['blue carry', .61, .18, .14, .12, colors.blue, 22],
+      ['center overflow', .49, .38, .10, .10, colors.violet, 20]
     ];
     const segments = [
-      ['clean beam', .15, .76, .28, .70, colors.inside],
-      ['red carry segment', .40, .72, .54, .66, colors.red],
-      ['blue carry segment', .57, .72, .72, .79, colors.blue],
-      ['face / center', .46, .53, .56, .46, colors.violet]
+      ['clean beam', .15, .80, .28, .74, colors.inside],
+      ['red carry segment', .40, .73, .54, .67, colors.red],
+      ['blue carry segment', .57, .73, .72, .80, colors.blue],
+      ['face / center', .46, .54, .56, .47, colors.violet]
     ];
     const qrrg = [
-      ['bridge reject', .26, .36, .49, .40, colors.red, false],
-      ['fallback', .49, .40, .70, .62, colors.violet, true],
-      ['bridge accept', .22, .23, .36, .21, colors.inside, false]
+      ['bridge reject', .25, .39, .48, .44, colors.red, false],
+      ['fallback', .52, .51, .66, .65, colors.violet, true],
+      ['bridge accept', .18, .24, .32, .21, colors.inside, false]
     ];
 
     function draw() {
       ctx.clearRect(0,0,canvas.width,canvas.height);
       ctx.lineWidth = 2; ctx.strokeStyle = colors.line; ctx.strokeRect(sx(0), sy(0), 760, 600);
       ctx.strokeStyle = 'rgba(159,176,208,.35)'; ctx.beginPath(); ctx.moveTo(sx(.5),sy(0)); ctx.lineTo(sx(.5),sy(1)); ctx.moveTo(sx(0),sy(.5)); ctx.lineTo(sx(1),sy(.5)); ctx.stroke();
-      label('Unit cube / E-tree node', sx(0), sy(0) - 22);
-      ctx.save(); ctx.setLineDash([8,8]); ctx.strokeStyle = colors.cyan; ctx.lineWidth = 3; ctx.strokeRect(sx(.25), sy(.25), .5*760, .5*600); ctx.restore();
-      label('SPEC-005 cull region / candidate window', sx(.25), sy(.25)-12, colors.cyan);
+      label('Unit cube / E-tree node', sx(0), sy(0) - 22, colors.text, 18);
+      ctx.save(); ctx.setLineDash([9,9]); ctx.strokeStyle = colors.cyan; ctx.lineWidth = 3; ctx.strokeRect(sx(.25), sy(.25), .5*760, .5*600); ctx.restore();
+      label('SPEC-005 cull window', sx(.25), sy(.25)-12, colors.cyan, 16);
 
-      for (const [name,x,y,w,h,color] of aabbs) { ctx.fillStyle = color + '44'; ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.fillRect(sx(x), sy(y), w*760, h*600); ctx.strokeRect(sx(x), sy(y), w*760, h*600); label(name, sx(x), sy(y)+h*600+18, color); }
-      for (const [name,ax,ay,bx,by,color] of segments) { ctx.strokeStyle = color; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(sx(ax),sy(ay)); ctx.lineTo(sx(bx),sy(by)); ctx.stroke(); ctx.fillStyle = color; ctx.beginPath(); ctx.arc(sx(ax),sy(ay),5,0,Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(sx(bx),sy(by),5,0,Math.PI*2); ctx.fill(); label(name, sx(ax), sy(ay)-10, color); }
-      for (const [name,ax,ay,bx,by,color,dash] of qrrg) { ctx.strokeStyle = color; ctx.lineWidth = dash ? 4 : 3; ctx.setLineDash(dash ? [12,8] : []); ctx.beginPath(); ctx.moveTo(sx(ax),sy(ay)); ctx.lineTo(sx(bx),sy(by)); ctx.stroke(); ctx.setLineDash([]); const x=sx((ax+bx)/2), y=sy((ay+by)/2); ctx.fillStyle=color; ctx.beginPath(); ctx.arc(x,y,7,0,Math.PI*2); ctx.fill(); label('Q-RRG ' + name, x+10, y-8, color); }
+      for (const [name,x,y,w,h,color,offset] of aabbs) { ctx.fillStyle = color + '3d'; ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.fillRect(sx(x), sy(y), w*760, h*600); ctx.strokeRect(sx(x), sy(y), w*760, h*600); label(name, sx(x), sy(y)+h*600+offset, color, 15); }
+      for (const [name,ax,ay,bx,by,color] of segments) { ctx.strokeStyle = color; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(sx(ax),sy(ay)); ctx.lineTo(sx(bx),sy(by)); ctx.stroke(); ctx.fillStyle = color; ctx.beginPath(); ctx.arc(sx(ax),sy(ay),5,0,Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(sx(bx),sy(by),5,0,Math.PI*2); ctx.fill(); label(name, sx(ax), sy(ay)-10, color, 14); }
+      for (const [name,ax,ay,bx,by,color,dash] of qrrg) { ctx.strokeStyle = color; ctx.lineWidth = dash ? 4 : 3; ctx.setLineDash(dash ? [12,8] : []); ctx.beginPath(); ctx.moveTo(sx(ax),sy(ay)); ctx.lineTo(sx(bx),sy(by)); ctx.stroke(); ctx.setLineDash([]); const x=sx((ax+bx)/2), y=sy((ay+by)/2); ctx.fillStyle=color; ctx.beginPath(); ctx.arc(x,y,7,0,Math.PI*2); ctx.fill(); label('Q-RRG ' + name, x+12, y-8, color, 14); }
 
-      const x = 880; let y = 92; label('Diagnostic Chain', x, y); y += 32;
-      [['AABB classify',colors.inside],['Segment/beam carry',colors.blue],['SPEC-005 cull',colors.cyan],['Q-RRG repair',colors.violet],['Public projection only',colors.muted]].forEach(([name,color]) => { ctx.fillStyle = color; ctx.fillRect(x, y-14, 18, 18); label(name, x+28, y, color); y += 36; });
-      y += 18; ctx.fillStyle = 'rgba(255,255,255,.08)'; ctx.fillRect(x, y, 180, 150); label('Boundary', x+14, y+28); ctx.fillStyle = colors.muted; ctx.font = '14px ui-sans-serif, system-ui'; ctx.fillText('Visual output explains', x+14, y+58); ctx.fillText('private fixture truth.', x+14, y+78); ctx.fillText('It does not replace', x+14, y+106); ctx.fillText('headless CI rails.', x+14, y+126);
+      const x = 880; let y = 92; label('Diagnostic Chain', x, y, colors.text, 18); y += 32;
+      [['AABB classify',colors.inside],['Segment/beam carry',colors.blue],['SPEC-005 cull',colors.cyan],['Q-RRG repair',colors.violet],['Public projection only',colors.muted]].forEach(([name,color]) => { ctx.fillStyle = color; ctx.fillRect(x, y-14, 18, 18); label(name, x+28, y, color, 15); y += 36; });
+      y += 18; ctx.fillStyle = 'rgba(255,255,255,.08)'; ctx.fillRect(x, y, 180, 150); label('Boundary', x+14, y+28, colors.text, 17); ctx.fillStyle = colors.muted; ctx.font = '14px ui-sans-serif, system-ui'; ctx.fillText('Visual output explains', x+14, y+58); ctx.fillText('private fixture truth.', x+14, y+78); ctx.fillText('It does not replace', x+14, y+106); ctx.fillText('headless CI rails.', x+14, y+126);
     }
     draw();
   </script>
