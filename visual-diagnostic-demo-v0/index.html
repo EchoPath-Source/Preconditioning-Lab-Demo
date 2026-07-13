@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EchoPath Visual Diagnostic Demo v0</title>
+  <style>
+    :root { color-scheme: dark; --bg:#0b1020; --panel:#121a33; --ink:#f2f6ff; --muted:#9fb0d0; --line:#283657; --green:#5ee28f; --red:#ff6b6b; --blue:#62a8ff; --gold:#ffd66b; --violet:#b58cff; --cyan:#65f2ff; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: radial-gradient(circle at top left, #172349, var(--bg) 45%); color:var(--ink); }
+    header { padding: 28px 28px 16px; border-bottom:1px solid var(--line); }
+    h1 { margin:0 0 8px; font-size:clamp(1.7rem, 4vw, 2.8rem); }
+    h2 { margin:0 0 12px; font-size:1.05rem; }
+    p { color:var(--muted); line-height:1.55; }
+    main { display:grid; grid-template-columns:minmax(320px, 1.2fr) minmax(280px, .8fr); gap:18px; padding:18px; }
+    .panel { background:rgba(18,26,51,.92); border:1px solid var(--line); border-radius:18px; padding:16px; box-shadow:0 12px 40px rgba(0,0,0,.25); }
+    #scene { width:100%; height:min(72vh, 720px); background:#071020; border:1px solid var(--line); border-radius:14px; display:block; }
+    .legend { display:grid; gap:8px; margin-top:12px; color:var(--muted); font-size:.92rem; }
+    .swatch { width:14px; height:14px; display:inline-block; border-radius:4px; margin-right:8px; vertical-align:-2px; }
+    .cards { display:grid; gap:12px; }
+    .card { padding:12px; border:1px solid var(--line); border-radius:14px; background:#0e1730; }
+    .card strong { display:block; margin-bottom:6px; }
+    code { color:var(--cyan); background:#081126; padding:2px 6px; border-radius:6px; }
+    footer { padding: 18px 28px 30px; color:var(--muted); }
+    .pill { display:inline-flex; margin:0 8px 8px 0; padding:6px 10px; border:1px solid var(--line); border-radius:999px; }
+    .markers { display:none; }
+    a { color:var(--cyan); }
+    @media (max-width: 900px) { main { grid-template-columns:1fr; } #scene { height:560px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>EchoPath Visual Diagnostic Demo v0</h1>
+    <p><strong>Source-of-truth boundary:</strong> private headless fixtures, JSONL outputs, and CI rails decide correctness. This public canvas is only a diagnostic projection.</p>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h2>Spatial Field Projection</h2>
+      <canvas id="scene" width="1100" height="760" aria-label="Visual diagnostic projection"></canvas>
+      <div class="legend">
+        <span><i class="swatch" style="background:var(--green)"></i>inside / accepted / clear</span>
+        <span><i class="swatch" style="background:var(--gold)"></i>intersecting / candidate / repair path</span>
+        <span><i class="swatch" style="background:var(--red)"></i>outside / rejected / red carry</span>
+        <span><i class="swatch" style="background:var(--blue)"></i>blue carry / boundary retained</span>
+        <span><i class="swatch" style="background:var(--violet)"></i>Q-RRG bridge / fallback event</span>
+      </div>
+    </section>
+
+    <aside class="panel cards">
+      <div class="card" data-demo-section="AABB"><strong>AABB Training Gym</strong><p>Resolved boxes, carried references, and boundary objects.</p></div>
+      <div class="card" data-demo-section="SegmentBeam"><strong>Segment / Beam Boundary</strong><p>Clean beams plus red / blue carry, face, center, and overflow cases.</p></div>
+      <div class="card" data-demo-section="Spec005Culling"><strong>SPEC-005 Culling / Frustum</strong><p>Culling region, candidate survivors, inside / intersecting / outside classifications, and skipped regions.</p></div>
+      <div class="card" data-demo-section="QrrgRepair"><strong>Q-RRG Repair Events</strong><p>Bridge accept, bridge reject, repair fail, and fallback events.</p></div>
+      <div class="card"><strong>Public-safe mirror</strong><p>This repo hosts only the visual surface. The private lab remains the source of truth.</p></div>
+    </aside>
+  </main>
+
+  <footer>
+    <span class="pill">No Blender</span>
+    <span class="pill">No Ogre3D</span>
+    <span class="pill">No OpenGL</span>
+    <span class="pill">No private kernel import</span>
+    <span class="pill">No external dependency</span>
+    <span class="pill"><a href="../">Back to index</a></span>
+  </footer>
+
+  <div class="markers" aria-hidden="true">
+    VISUAL_DIAGNOSTIC_DEMO_V0
+    PUBLIC_SAFE_DEMO_MIRROR
+    SOURCE_OF_TRUTH_BOUNDARY
+    AABB_TRAINING_GYM_SECTION
+    SEGMENT_BEAM_SECTION
+    RED_BLUE_CARRY_SECTION
+    FACE_CENTER_OVERFLOW_SECTION
+    SPEC005_CULLING_SECTION
+    INSIDE_INTERSECTING_OUTSIDE_SECTION
+    QRRG_REPAIR_SECTION
+    BRIDGE_ACCEPT_REJECT_FALLBACK_SECTION
+    NO_BLENDER_DEPENDENCY
+    NO_OGRE_DEPENDENCY
+    NO_OPENGL_DEPENDENCY
+    NO_PRIVATE_KERNEL_IMPORT
+  </div>
+
+  <script>
+    const canvas = document.getElementById('scene');
+    const ctx = canvas.getContext('2d');
+    const colors = { inside:'#5ee28f', red:'#ff6b6b', blue:'#62a8ff', gold:'#ffd66b', violet:'#b58cff', cyan:'#65f2ff', line:'#44557f', text:'#f2f6ff', muted:'#9fb0d0' };
+    const sx = v => 90 + v * 760;
+    const sy = v => 70 + v * 600;
+    const label = (text, x, y, color = colors.text) => { ctx.fillStyle = color; ctx.font = '16px ui-sans-serif, system-ui'; ctx.fillText(text, x, y); };
+
+    const aabbs = [
+      ['resolved', .12, .18, .14, .12, colors.inside],
+      ['red carry', .44, .17, .14, .12, colors.red],
+      ['blue carry', .61, .18, .14, .12, colors.blue],
+      ['center overflow', .49, .38, .10, .10, colors.violet]
+    ];
+    const segments = [
+      ['clean beam', .15, .76, .28, .70, colors.inside],
+      ['red carry segment', .40, .72, .54, .66, colors.red],
+      ['blue carry segment', .57, .72, .72, .79, colors.blue],
+      ['face / center', .46, .53, .56, .46, colors.violet]
+    ];
+    const qrrg = [
+      ['bridge reject', .26, .36, .49, .40, colors.red, false],
+      ['fallback', .49, .40, .70, .62, colors.violet, true],
+      ['bridge accept', .22, .23, .36, .21, colors.inside, false]
+    ];
+
+    function draw() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.lineWidth = 2; ctx.strokeStyle = colors.line; ctx.strokeRect(sx(0), sy(0), 760, 600);
+      ctx.strokeStyle = 'rgba(159,176,208,.35)'; ctx.beginPath(); ctx.moveTo(sx(.5),sy(0)); ctx.lineTo(sx(.5),sy(1)); ctx.moveTo(sx(0),sy(.5)); ctx.lineTo(sx(1),sy(.5)); ctx.stroke();
+      label('Unit cube / E-tree node', sx(0), sy(0) - 22);
+      ctx.save(); ctx.setLineDash([8,8]); ctx.strokeStyle = colors.cyan; ctx.lineWidth = 3; ctx.strokeRect(sx(.25), sy(.25), .5*760, .5*600); ctx.restore();
+      label('SPEC-005 cull region / candidate window', sx(.25), sy(.25)-12, colors.cyan);
+
+      for (const [name,x,y,w,h,color] of aabbs) { ctx.fillStyle = color + '44'; ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.fillRect(sx(x), sy(y), w*760, h*600); ctx.strokeRect(sx(x), sy(y), w*760, h*600); label(name, sx(x), sy(y)+h*600+18, color); }
+      for (const [name,ax,ay,bx,by,color] of segments) { ctx.strokeStyle = color; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(sx(ax),sy(ay)); ctx.lineTo(sx(bx),sy(by)); ctx.stroke(); ctx.fillStyle = color; ctx.beginPath(); ctx.arc(sx(ax),sy(ay),5,0,Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(sx(bx),sy(by),5,0,Math.PI*2); ctx.fill(); label(name, sx(ax), sy(ay)-10, color); }
+      for (const [name,ax,ay,bx,by,color,dash] of qrrg) { ctx.strokeStyle = color; ctx.lineWidth = dash ? 4 : 3; ctx.setLineDash(dash ? [12,8] : []); ctx.beginPath(); ctx.moveTo(sx(ax),sy(ay)); ctx.lineTo(sx(bx),sy(by)); ctx.stroke(); ctx.setLineDash([]); const x=sx((ax+bx)/2), y=sy((ay+by)/2); ctx.fillStyle=color; ctx.beginPath(); ctx.arc(x,y,7,0,Math.PI*2); ctx.fill(); label('Q-RRG ' + name, x+10, y-8, color); }
+
+      const x = 880; let y = 92; label('Diagnostic Chain', x, y); y += 32;
+      [['AABB classify',colors.inside],['Segment/beam carry',colors.blue],['SPEC-005 cull',colors.cyan],['Q-RRG repair',colors.violet],['Public projection only',colors.muted]].forEach(([name,color]) => { ctx.fillStyle = color; ctx.fillRect(x, y-14, 18, 18); label(name, x+28, y, color); y += 36; });
+      y += 18; ctx.fillStyle = 'rgba(255,255,255,.08)'; ctx.fillRect(x, y, 180, 150); label('Boundary', x+14, y+28); ctx.fillStyle = colors.muted; ctx.font = '14px ui-sans-serif, system-ui'; ctx.fillText('Visual output explains', x+14, y+58); ctx.fillText('private fixture truth.', x+14, y+78); ctx.fillText('It does not replace', x+14, y+106); ctx.fillText('headless CI rails.', x+14, y+126);
+    }
+    draw();
+  </script>
+</body>
+</html>
