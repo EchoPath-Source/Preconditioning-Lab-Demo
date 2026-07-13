@@ -5,22 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>EchoPath Preconditioning Lab Demo</title>
   <style>
-    :root { color-scheme: dark; --bg:#0b1020; --panel:#121a33; --ink:#f2f6ff; --muted:#9fb0d0; --line:#283657; --cyan:#65f2ff; --green:#5ee28f; --gold:#ffd66b; }
+    :root { color-scheme: dark; --bg:#0b1020; --panel:#121a33; --ink:#f2f6ff; --muted:#aab7d6; --line:#283657; --cyan:#65f2ff; --green:#5ee28f; --gold:#ffd66b; --red:#ff6b6b; }
     * { box-sizing: border-box; }
-    body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: radial-gradient(circle at top left, #172349, var(--bg) 45%); color: var(--ink); }
-    main { max-width: 1040px; margin: 0 auto; padding: 44px 22px; }
-    .panel { background: rgba(18,26,51,.92); border: 1px solid var(--line); border-radius: 22px; padding: 26px; box-shadow: 0 16px 48px rgba(0,0,0,.28); }
-    h1 { margin: 0 0 12px; font-size: clamp(2rem, 5vw, 3.6rem); line-height: 1.05; }
-    h2 { margin-top: 28px; }
-    p { color: var(--muted); line-height: 1.58; font-size: 1.02rem; }
-    a.button { display: inline-flex; margin: 18px 12px 0 0; padding: 13px 17px; border-radius: 14px; border: 1px solid var(--cyan); color: var(--ink); text-decoration: none; background: rgba(101,242,255,.13); }
+    body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: radial-gradient(circle at top left, #172349, var(--bg) 48%); color: var(--ink); }
+    main { max-width: 1080px; margin: 0 auto; padding: 44px 22px; }
+    .panel { background: rgba(18,26,51,.93); border: 1px solid var(--line); border-radius: 24px; padding: clamp(22px, 4vw, 34px); box-shadow: 0 18px 56px rgba(0,0,0,.30); }
+    h1 { margin: 0 0 14px; font-size: clamp(2.1rem, 5.5vw, 4rem); line-height: 1.04; letter-spacing: -.03em; }
+    h2 { margin: 30px 0 12px; font-size: clamp(1.4rem, 3vw, 2rem); }
+    p { color: var(--muted); line-height: 1.62; font-size: clamp(1rem, 2vw, 1.12rem); }
+    a.button { display: inline-flex; margin: 18px 12px 0 0; padding: 14px 18px; border-radius: 15px; border: 1px solid var(--cyan); color: var(--ink); text-decoration: none; background: rgba(101,242,255,.13); font-weight: 650; }
     a.button.secondary { border-color: var(--line); background: rgba(255,255,255,.05); color: var(--muted); }
     .chain { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
-    .step { border: 1px solid var(--line); border-radius: 16px; padding: 14px; background: #0e1730; min-height: 108px; }
-    .step strong { display:block; color: var(--ink); margin-bottom: 6px; }
+    .step, .callout { border: 1px solid var(--line); border-radius: 17px; padding: 15px; background: #0e1730; }
+    .step strong, .callout strong { display:block; color: var(--ink); margin-bottom: 7px; }
+    .note { border-left: 4px solid var(--gold); padding-left: 16px; }
+    .twocol { display:grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+    .yes { border-color: rgba(94,226,143,.45); }
+    .no { border-color: rgba(255,107,107,.40); }
     code { color: var(--cyan); background:#081126; padding:2px 6px; border-radius:6px; }
-    .note { border-left: 3px solid var(--gold); padding-left: 14px; }
-    @media (max-width: 800px) { .chain { grid-template-columns: 1fr; } }
+    ul { margin: 10px 0 0 20px; color: var(--muted); line-height: 1.65; padding: 0; }
+    footer { color: var(--muted); margin-top: 18px; text-align: center; font-size: .95rem; }
+    @media (max-width: 800px) { main { padding: 24px 14px; } .chain, .twocol { grid-template-columns: 1fr; } a.button { width: 100%; justify-content:center; } }
   </style>
 </head>
 <body>
@@ -39,9 +44,16 @@
         <div class="step"><strong>Q-RRG Repair</strong><p>Projects bridge accept, bridge reject, and fallback behavior.</p></div>
       </div>
 
+      <h2>What this shows</h2>
+      <div class="twocol">
+        <div class="callout yes"><strong>It shows the spine</strong><ul><li>preconditioning decides relevance,</li><li>culling skips safely,</li><li>carry preserves boundary truth,</li><li>Q-RRG repair responds to structure.</li></ul></div>
+        <div class="callout no"><strong>It does not claim</strong><ul><li>production runtime performance,</li><li>private kernel exposure,</li><li>renderer/GPU integration,</li><li>a public SDK or proof claim.</li></ul></div>
+      </div>
+
       <h2>Boundary</h2>
       <p><code>private Preconditioning Lab fixtures / JSONL / CI</code> remain the source of truth. This site is a browser-readable diagnostic surface for sharing the concept safely.</p>
     </section>
+    <footer>EchoPath Preconditioning Lab Demo · public-safe mirror</footer>
   </main>
 </body>
 </html>
