@@ -51,7 +51,9 @@ spec005_culling_scene_v0 JSON
 qrrg_repair_event_v0 JSONL
 ```
 
-The file is read with the browser FileReader API. It is not uploaded to a backend server.
+The file picker reads local files with the browser FileReader API. It is not uploaded to a backend server.
+
+v1 also includes a built-in stress-sample selector. These built-in samples are fetched from this public repository's `sample-data/` directory and rendered directly in the browser, so users do not need to manually download files just to test the demo.
 
 ## Sample Data
 
@@ -76,23 +78,29 @@ The stress samples are synthetic and intentionally small enough for browser load
 
 ### Download and Test Stress Samples
 
+From the live v1 page, use the built-in stress-sample selector and click:
+
+```text
+Load selected built-in sample
+```
+
+To download a sample instead, use the adjacent download button or open a URL such as:
+
+```text
+https://echopath-source.github.io/Preconditioning-Lab-Demo/sample-data/spec005_boundary_stress_scene_v0.json
+https://echopath-source.github.io/Preconditioning-Lab-Demo/sample-data/qrrg_repair_stress_events_v0.jsonl
+```
+
 From a local checkout, run:
 
 ```sh
 python3 -m http.server 8000
 ```
 
-Then open the v1 loader and use the file picker to load any stress sample from `sample-data/`:
+Then open the v1 loader and use either the built-in selector or the file picker to load any stress sample from `sample-data/`:
 
 ```text
 http://localhost:8000/visual-diagnostic-demo-v1/
-```
-
-To download a single stress sample from GitHub Pages after deployment, open a URL such as:
-
-```text
-https://echopath-source.github.io/Preconditioning-Lab-Demo/sample-data/spec005_boundary_stress_scene_v0.json
-https://echopath-source.github.io/Preconditioning-Lab-Demo/sample-data/qrrg_repair_stress_events_v0.jsonl
 ```
 
 Quick schema checks from the repository root:
