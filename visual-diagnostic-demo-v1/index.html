@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EchoPath Visual Diagnostic Demo v1 — Local Loader</title>
+  <style>
+    :root { color-scheme: dark; --bg:#0b1020; --panel:#121a33; --ink:#f2f6ff; --muted:#aab7d6; --line:#283657; --green:#5ee28f; --red:#ff6b6b; --blue:#62a8ff; --gold:#ffd66b; --violet:#b58cff; --cyan:#65f2ff; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: radial-gradient(circle at top left, #172349, var(--bg) 48%); color:var(--ink); }
+    header { padding: 28px 22px 16px; border-bottom:1px solid var(--line); }
+    h1 { margin:0 0 8px; font-size:clamp(1.85rem, 6vw, 3rem); line-height:1.05; letter-spacing:-.02em; }
+    h2 { margin:0 0 12px; font-size:1.1rem; }
+    p { color:var(--muted); line-height:1.58; }
+    main { display:grid; grid-template-columns:minmax(320px, 1.25fr) minmax(280px, .75fr); gap:18px; padding:18px; }
+    .panel { background:rgba(18,26,51,.93); border:1px solid var(--line); border-radius:18px; padding:16px; box-shadow:0 12px 40px rgba(0,0,0,.25); }
+    .toolbar { display:grid; gap:10px; grid-template-columns:1fr; margin-bottom:14px; }
+    input[type=file] { width:100%; padding:12px; border-radius:12px; border:1px solid var(--line); background:#0e1730; color:var(--muted); }
+    button, a.button { display:inline-flex; align-items:center; justify-content:center; border:1px solid var(--cyan); color:var(--ink); background:rgba(101,242,255,.12); padding:11px 13px; border-radius:12px; text-decoration:none; font-weight:650; cursor:pointer; }
+    .buttons { display:flex; flex-wrap:wrap; gap:8px; }
+    .canvas-scroll { overflow-x:auto; border-radius:14px; border:1px solid var(--line); background:#071020; }
+    #scene { width:1100px; height:760px; background:#071020; display:block; }
+    .legend { display:grid; gap:8px; margin-top:12px; color:var(--muted); font-size:.95rem; }
+    .swatch { width:14px; height:14px; display:inline-block; border-radius:4px; margin-right:8px; vertical-align:-2px; }
+    .cards { display:grid; gap:12px; }
+    .card { padding:13px; border:1px solid var(--line); border-radius:14px; background:#0e1730; }
+    .card strong { display:block; margin-bottom:6px; color:var(--ink); }
+    code { color:var(--cyan); background:#081126; padding:2px 6px; border-radius:6px; }
+    .status { border-left:4px solid var(--gold); padding-left:12px; }
+    .ok { border-left-color: var(--green); }
+    .bad { border-left-color: var(--red); }
+    footer { padding: 18px 28px 30px; color:var(--muted); }
+    .pill { display:inline-flex; margin:0 8px 8px 0; padding:6px 10px; border:1px solid var(--line); border-radius:999px; }
+    @media (max-width: 900px) { main { grid-template-columns:1fr; padding:14px; } header { padding:24px 16px 14px; } #scene { width:980px; height:700px; } .canvas-scroll { -webkit-overflow-scrolling: touch; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Visual Diagnostic Demo v1</h1>
+    <p><strong>Local loader:</strong> choose a public-safe JSON or JSONL file. Parsing happens in your browser only; files are not uploaded to a server. Private lab fixtures, JSONL outputs, and CI rails remain the source of truth.</p>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h2>Load public-safe fixture or event log</h2>
+      <div class="toolbar">
+        <input id="fileInput" type="file" accept=".json,.jsonl,application/json" />
+        <div class="buttons">
+          <button id="sampleSpec">Load sample SPEC-005 scene</button>
+          <button id="sampleQrrg">Load sample Q-RRG events</button>
+          <a class="button" href="../visual-diagnostic-demo-v0/">Static v0</a>
+        </div>
+        <p id="status" class="status">Ready. Load a <code>spec005_culling_scene_v0</code> JSON fixture or <code>qrrg_repair_event_v0</code> JSONL event log.</p>
+      </div>
+
+      <div class="canvas-scroll" aria-label="Horizontally scrollable diagnostic canvas">
+        <canvas id="scene" width="1100" height="760" aria-label="Upload-enabled visual diagnostic projection"></canvas>
+      </div>
+      <div class="legend">
+        <span><i class="swatch" style="background:var(--green)"></i>inside / accepted / clear</span>
+        <span><i class="swatch" style="background:var(--gold)"></i>intersecting / candidate / repair path</span>
+        <span><i class="swatch" style="background:var(--red)"></i>outside / rejected / red carry</span>
+        <span><i class="swatch" style="background:var(--blue)"></i>carry / boundary retained</span>
+        <span><i class="swatch" style="background:var(--violet)"></i>Q-RRG bridge / fallback event</span>
+      </div>
+    </section>
+
+    <aside class="panel cards">
+      <div class="card"><strong>Supported now</strong><p><code>spec005_culling_scene_v0</code> JSON and <code>qrrg_repair_event_v0</code> JSONL.</p></div>
+      <div class="card"><strong>Local-only safety</strong><p>The browser reads your selected file with FileReader. The file does not leave the device.</p></div>
+      <div class="card"><strong>Still not proof</strong><p>This page visualizes public-safe data. It does not make performance, production, SDK, or private-kernel claims.</p></div>
+      <div class="card"><strong>Next</strong><p>Training Gym AABB/segment JSON support can be added after we settle the public-safe event fields.</p></div>
+    </aside>
+  </main>
+
+  <footer>
+    <span class="pill">No backend upload</span>
+    <span class="pill">No private kernel import</span>
+    <span class="pill">No external dependency</span>
+    <span class="pill"><a href="../">Back to index</a></span>
+  </footer>
+
+  <script>
+    const canvas = document.getElementById('scene');
+    const ctx = canvas.getContext('2d');
+    const statusEl = document.getElementById('status');
+    const colors = { inside:'#5ee28f', red:'#ff6b6b', blue:'#62a8ff', gold:'#ffd66b', violet:'#b58cff', cyan:'#65f2ff', line:'#44557f', text:'#f2f6ff', muted:'#aab7d6' };
+    const sx = v => 90 + v * 760;
+    const sy = v => 70 + v * 600;
+    const label = (text, x, y, color = colors.text, size = 16) => { ctx.fillStyle = color; ctx.font = `${size}px ui-sans-serif, system-ui`; ctx.fillText(String(text), x, y); };
+
+    const sampleSpec = {
+      schema_version:'spec005_culling_scene_v0', fixture_id:'embedded_spec005_sample', cull_bounds:{mn:[.25,.25,.25], mx:[.75,.75,.75]},
+      objects:[
+        {id:'inside_core', bounds:{mn:[.36,.36,.36], mx:[.48,.48,.48]}, carry_state:'resolved'},
+        {id:'intersect_left', bounds:{mn:[.18,.38,.38], mx:[.32,.52,.52]}, carry_state:'carry'},
+        {id:'outside_left', bounds:{mn:[.04,.60,.40], mx:[.16,.72,.52]}, carry_state:'resolved'},
+        {id:'intersect_top', bounds:{mn:[.50,.68,.40], mx:[.62,.82,.52]}, carry_state:'carry'},
+        {id:'inside_upper', bounds:{mn:[.62,.52,.55], mx:[.72,.62,.65]}, carry_state:'resolved'}
+      ],
+      expected_classifications:[
+        {object_id:'inside_core', classification:'inside'}, {object_id:'intersect_left', classification:'intersecting'}, {object_id:'outside_left', classification:'outside'}, {object_id:'intersect_top', classification:'intersecting'}, {object_id:'inside_upper', classification:'inside'}
+      ]
+    };
+    const sampleQrrg = [
+      {qrrg_event:'bridge_reject', patch_success:false, patch_type:'component_bridge', boundary_state:'gate', residue_score:.71, path_cost_delta:.44},
+      {qrrg_event:'fallback_to_boundary_carry', patch_success:false, patch_type:'fallback', boundary_state:'carry', residue_score:.79, path_cost_delta:.35},
+      {qrrg_event:'bridge_accept', patch_success:true, patch_type:'local_repair', boundary_state:'clear', residue_score:.15, path_cost_delta:-.10},
+      {qrrg_event:'repair_success', patch_success:true, patch_type:'local_repair', boundary_state:'clear', residue_score:.20, path_cost_delta:-.12}
+    ];
+
+    function setStatus(text, mode='') { statusEl.textContent = text; statusEl.className = 'status ' + mode; }
+    function drawBase(title='Upload-ready diagnostic canvas') {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.lineWidth = 2; ctx.strokeStyle = colors.line; ctx.strokeRect(sx(0), sy(0), 760, 600);
+      ctx.strokeStyle = 'rgba(159,176,208,.35)'; ctx.beginPath(); ctx.moveTo(sx(.5),sy(0)); ctx.lineTo(sx(.5),sy(1)); ctx.moveTo(sx(0),sy(.5)); ctx.lineTo(sx(1),sy(.5)); ctx.stroke();
+      label('Unit cube / diagnostic field', sx(0), sy(0) - 22, colors.text, 18);
+      label(title, 880, 92, colors.text, 18);
+    }
+    function classifyWithCull(obj, cull) {
+      const mn = obj.bounds.mn, mx = obj.bounds.mx, cmin = cull.mn, cmax = cull.mx;
+      const outside = mx[0] < cmin[0] || mn[0] > cmax[0] || mx[1] < cmin[1] || mn[1] > cmax[1];
+      if (outside) return 'outside';
+      const inside = mn[0] >= cmin[0] && mx[0] <= cmax[0] && mn[1] >= cmin[1] && mx[1] <= cmax[1];
+      return inside ? 'inside' : 'intersecting';
+    }
+    function drawSpec(scene) {
+      const cull = scene.cull_bounds || {mn:[.25,.25,.25], mx:[.75,.75,.75]};
+      const expected = Object.fromEntries((scene.expected_classifications || []).map(x => [x.object_id, x.classification]));
+      drawBase('SPEC-005 loaded scene');
+      ctx.save(); ctx.setLineDash([9,9]); ctx.strokeStyle = colors.cyan; ctx.lineWidth = 3; ctx.strokeRect(sx(cull.mn[0]), sy(cull.mn[1]), (cull.mx[0]-cull.mn[0])*760, (cull.mx[1]-cull.mn[1])*600); ctx.restore();
+      label('cull window', sx(cull.mn[0]), sy(cull.mn[1])-12, colors.cyan, 16);
+      let inside=0, intersecting=0, outside=0, carry=0;
+      for (const obj of scene.objects || []) {
+        if (!obj.bounds || !obj.bounds.mn || !obj.bounds.mx) continue;
+        const cls = expected[obj.id] || classifyWithCull(obj, cull);
+        const color = cls === 'inside' ? colors.inside : cls === 'outside' ? colors.red : colors.gold;
+        if (cls === 'inside') inside++; else if (cls === 'outside') outside++; else intersecting++;
+        if (obj.carry_state === 'carry') carry++;
+        const x = obj.bounds.mn[0], y = obj.bounds.mn[1], w = obj.bounds.mx[0]-obj.bounds.mn[0], h = obj.bounds.mx[1]-obj.bounds.mn[1];
+        ctx.fillStyle = color + '3d'; ctx.strokeStyle = obj.carry_state === 'carry' ? colors.blue : color; ctx.lineWidth = obj.carry_state === 'carry' ? 5 : 3;
+        ctx.fillRect(sx(x), sy(y), Math.max(w*760, 12), Math.max(h*600, 12)); ctx.strokeRect(sx(x), sy(y), Math.max(w*760, 12), Math.max(h*600, 12));
+        label(obj.id || cls, sx(x), sy(y)+Math.max(h*600,12)+18, obj.carry_state === 'carry' ? colors.blue : color, 14);
+      }
+      label(`inside: ${inside}`, 880, 132, colors.inside, 15); label(`intersecting: ${intersecting}`, 880, 164, colors.gold, 15); label(`outside: ${outside}`, 880, 196, colors.red, 15); label(`carry refs: ${carry}`, 880, 228, colors.blue, 15);
+    }
+    function drawQrrg(events) {
+      drawBase('Q-RRG event log');
+      const rows = events.slice(0, 12);
+      rows.forEach((ev, i) => {
+        const y = .18 + (i % 6) * .11, ax = .12 + (i % 2) * .10, bx = .48 + (i % 3) * .12;
+        const success = !!ev.patch_success; const fallback = String(ev.qrrg_event || '').includes('fallback') || ev.patch_type === 'fallback';
+        const color = success ? colors.inside : fallback ? colors.violet : colors.red;
+        ctx.strokeStyle = color; ctx.lineWidth = fallback ? 4 : 3; ctx.setLineDash(fallback ? [12,8] : []); ctx.beginPath(); ctx.moveTo(sx(ax), sy(y)); ctx.lineTo(sx(bx), sy(y+.04)); ctx.stroke(); ctx.setLineDash([]);
+        const midx = sx((ax+bx)/2), midy = sy(y+.02); ctx.fillStyle = color; ctx.beginPath(); ctx.arc(midx, midy, 7, 0, Math.PI*2); ctx.fill();
+        label(ev.qrrg_event || ev.patch_type || 'event', midx+12, midy-8, color, 14);
+      });
+      const fails = rows.filter(e => !e.patch_success).length, successes = rows.length - fails, fallback = rows.filter(e => String(e.qrrg_event||'').includes('fallback') || e.patch_type === 'fallback').length;
+      label(`events: ${rows.length}`, 880, 132, colors.text, 15); label(`success: ${successes}`, 880, 164, colors.inside, 15); label(`fail/reject: ${fails}`, 880, 196, colors.red, 15); label(`fallback: ${fallback}`, 880, 228, colors.violet, 15);
+    }
+    function parseJsonl(text) { return text.split(/\r?\n/).map(x => x.trim()).filter(Boolean).map(line => JSON.parse(line)); }
+    function loadText(text, name='local file') {
+      try {
+        const trimmed = text.trim();
+        if (!trimmed) throw new Error('Empty file');
+        if (trimmed.startsWith('{')) {
+          const obj = JSON.parse(trimmed);
+          if (obj.schema_version === 'spec005_culling_scene_v0') { drawSpec(obj); setStatus(`Loaded ${name}: SPEC-005 scene with ${(obj.objects||[]).length} objects.`, 'ok'); return; }
+          throw new Error(`Unsupported JSON schema_version: ${obj.schema_version || 'missing'}`);
+        }
+        const events = parseJsonl(trimmed);
+        if (events.length && events.every(e => e.schema_version === 'qrrg_repair_event_v0' || e.qrrg_event || e.patch_type)) { drawQrrg(events); setStatus(`Loaded ${name}: Q-RRG event log with ${events.length} events.`, 'ok'); return; }
+        throw new Error('Unsupported JSONL event shape');
+      } catch (err) { setStatus(`Could not load ${name}: ${err.message}`, 'bad'); drawBase('Load failed'); }
+    }
+    document.getElementById('fileInput').addEventListener('change', async (event) => { const file = event.target.files[0]; if (!file) return; loadText(await file.text(), file.name); });
+    document.getElementById('sampleSpec').addEventListener('click', () => { drawSpec(sampleSpec); setStatus('Loaded embedded SPEC-005 sample scene.', 'ok'); });
+    document.getElementById('sampleQrrg').addEventListener('click', () => { drawQrrg(sampleQrrg); setStatus('Loaded embedded Q-RRG sample events.', 'ok'); });
+    drawSpec(sampleSpec);
+  </script>
+</body>
+</html>
