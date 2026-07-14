@@ -1,0 +1,37 @@
+{
+  "schema_version": "spec005_culling_scene_v0",
+  "fixture_id": "public_spec005_boundary_stress_scene_v0",
+  "description": "Public-safe synthetic SPEC-005 boundary stress scene with inside, outside, intersecting, and boundary-touching AABBs.",
+  "geometry_kind": "aabb",
+  "node_bounds": {"mn": [0, 0, 0], "mx": [1, 1, 1]},
+  "cull_bounds": {"mn": [0.25, 0.25, 0.25], "mx": [0.75, 0.75, 0.75]},
+  "objects": [
+    {"id": "inside_center_dense", "bounds": {"mn": [0.45, 0.45, 0.45], "mx": [0.55, 0.55, 0.55]}, "carry_state": "resolved"},
+    {"id": "inside_near_min_corner", "bounds": {"mn": [0.26, 0.26, 0.26], "mx": [0.34, 0.34, 0.34]}, "carry_state": "resolved"},
+    {"id": "touch_left_face", "bounds": {"mn": [0.15, 0.34, 0.40], "mx": [0.25, 0.48, 0.54]}, "carry_state": "carry"},
+    {"id": "touch_right_face", "bounds": {"mn": [0.75, 0.52, 0.36], "mx": [0.88, 0.66, 0.50]}, "carry_state": "carry"},
+    {"id": "touch_top_edge", "bounds": {"mn": [0.42, 0.75, 0.62], "mx": [0.58, 0.90, 0.72]}, "carry_state": "carry"},
+    {"id": "intersect_left_band", "bounds": {"mn": [0.18, 0.56, 0.30], "mx": [0.33, 0.70, 0.44]}, "carry_state": "carry"},
+    {"id": "intersect_bottom_band", "bounds": {"mn": [0.50, 0.12, 0.40], "mx": [0.64, 0.30, 0.58]}, "carry_state": "carry"},
+    {"id": "intersect_corner_clip", "bounds": {"mn": [0.70, 0.70, 0.70], "mx": [0.84, 0.86, 0.86]}, "carry_state": "carry"},
+    {"id": "outside_left_clear", "bounds": {"mn": [0.04, 0.30, 0.30], "mx": [0.14, 0.42, 0.42]}, "carry_state": "resolved"},
+    {"id": "outside_upper_clear", "bounds": {"mn": [0.34, 0.84, 0.34], "mx": [0.48, 0.95, 0.48]}, "carry_state": "resolved"},
+    {"id": "outside_far_corner", "bounds": {"mn": [0.82, 0.82, 0.82], "mx": [0.96, 0.96, 0.96]}, "carry_state": "resolved"},
+    {"id": "thin_boundary_sliver", "bounds": {"mn": [0.245, 0.245, 0.50], "mx": [0.255, 0.755, 0.54]}, "carry_state": "carry"}
+  ],
+  "expected_classifications": [
+    {"object_id": "inside_center_dense", "classification": "inside"},
+    {"object_id": "inside_near_min_corner", "classification": "inside"},
+    {"object_id": "touch_left_face", "classification": "intersecting"},
+    {"object_id": "touch_right_face", "classification": "intersecting"},
+    {"object_id": "touch_top_edge", "classification": "intersecting"},
+    {"object_id": "intersect_left_band", "classification": "intersecting"},
+    {"object_id": "intersect_bottom_band", "classification": "intersecting"},
+    {"object_id": "intersect_corner_clip", "classification": "intersecting"},
+    {"object_id": "outside_left_clear", "classification": "outside"},
+    {"object_id": "outside_upper_clear", "classification": "outside"},
+    {"object_id": "outside_far_corner", "classification": "outside"},
+    {"object_id": "thin_boundary_sliver", "classification": "intersecting"}
+  ],
+  "non_claims": ["Public-safe synthetic stress data only.", "Not a private lab fixture.", "Not a private kernel trace."]
+}

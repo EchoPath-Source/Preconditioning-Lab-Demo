@@ -55,9 +55,66 @@ The file is read with the browser FileReader API. It is not uploaded to a backen
 
 ## Sample Data
 
+Baseline samples:
+
 ```text
 sample-data/spec005_culling_scene_v0.json
 sample-data/qrrg_repair_events_v0.jsonl
+```
+
+Public-safe stress samples for EchoPath Preconditioning Lab Demo v1:
+
+```text
+sample-data/spec005_boundary_stress_scene_v0.json
+sample-data/spec005_carry_retention_scene_v0.json
+sample-data/qrrg_repair_stress_events_v0.jsonl
+sample-data/mixed_scene_qrrg_pair_spec005_scene_v0.json
+sample-data/mixed_scene_qrrg_pair_events_v0.jsonl
+```
+
+The stress samples are synthetic and intentionally small enough for browser loading. They cover boundary-touching, inside, outside, intersecting, carry retention, bridge accept, bridge reject, fallback, repair fail, and repair success cases without private lab fixtures, Don source files, or private kernel traces.
+
+### Download and Test Stress Samples
+
+From a local checkout, run:
+
+```sh
+python3 -m http.server 8000
+```
+
+Then open the v1 loader and use the file picker to load any stress sample from `sample-data/`:
+
+```text
+http://localhost:8000/visual-diagnostic-demo-v1/
+```
+
+To download a single stress sample from GitHub Pages after deployment, open a URL such as:
+
+```text
+https://echopath-source.github.io/Preconditioning-Lab-Demo/sample-data/spec005_boundary_stress_scene_v0.json
+https://echopath-source.github.io/Preconditioning-Lab-Demo/sample-data/qrrg_repair_stress_events_v0.jsonl
+```
+
+Quick schema checks from the repository root:
+
+```sh
+python3 -m json.tool sample-data/spec005_boundary_stress_scene_v0.json >/dev/null
+python3 -m json.tool sample-data/spec005_carry_retention_scene_v0.json >/dev/null
+python3 -m json.tool sample-data/mixed_scene_qrrg_pair_spec005_scene_v0.json >/dev/null
+python3 - <<'PY'
+import json
+from pathlib import Path
+for path in [
+    Path('sample-data/qrrg_repair_stress_events_v0.jsonl'),
+    Path('sample-data/mixed_scene_qrrg_pair_events_v0.jsonl'),
+]:
+    with path.open() as fh:
+        for line_number, line in enumerate(fh, 1):
+            if line.strip():
+                event = json.loads(line)
+                assert event.get('schema_version') == 'qrrg_repair_event_v0', (path, line_number)
+print('JSONL stress samples parsed successfully')
+PY
 ```
 
 ## What the Demo Shows

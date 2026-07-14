@@ -1,0 +1,33 @@
+{
+  "schema_version": "spec005_culling_scene_v0",
+  "fixture_id": "public_spec005_carry_retention_scene_v0",
+  "description": "Public-safe synthetic SPEC-005 scene emphasizing carry retention across boundary and bridge-like spans.",
+  "geometry_kind": "aabb",
+  "node_bounds": {"mn": [0, 0, 0], "mx": [1, 1, 1]},
+  "cull_bounds": {"mn": [0.20, 0.20, 0.20], "mx": [0.80, 0.80, 0.80]},
+  "objects": [
+    {"id": "carry_inside_seed", "bounds": {"mn": [0.30, 0.30, 0.30], "mx": [0.42, 0.42, 0.42]}, "carry_state": "carry"},
+    {"id": "carry_bridge_horizontal", "bounds": {"mn": [0.12, 0.48, 0.48], "mx": [0.88, 0.54, 0.54]}, "carry_state": "carry"},
+    {"id": "carry_bridge_vertical", "bounds": {"mn": [0.48, 0.10, 0.56], "mx": [0.54, 0.90, 0.62]}, "carry_state": "carry"},
+    {"id": "resolved_inside_anchor", "bounds": {"mn": [0.58, 0.58, 0.32], "mx": [0.70, 0.70, 0.44]}, "carry_state": "resolved"},
+    {"id": "carry_touch_min_x", "bounds": {"mn": [0.05, 0.24, 0.66], "mx": [0.20, 0.38, 0.78]}, "carry_state": "carry"},
+    {"id": "carry_touch_max_y", "bounds": {"mn": [0.32, 0.80, 0.22], "mx": [0.46, 0.95, 0.36]}, "carry_state": "carry"},
+    {"id": "resolved_outside_noise", "bounds": {"mn": [0.84, 0.08, 0.20], "mx": [0.96, 0.18, 0.32]}, "carry_state": "resolved"},
+    {"id": "carry_outside_retained", "bounds": {"mn": [0.02, 0.82, 0.68], "mx": [0.16, 0.96, 0.82]}, "carry_state": "carry"},
+    {"id": "resolved_inside_small", "bounds": {"mn": [0.72, 0.24, 0.72], "mx": [0.78, 0.30, 0.78]}, "carry_state": "resolved"},
+    {"id": "carry_intersect_z_clip", "bounds": {"mn": [0.40, 0.40, 0.76], "mx": [0.52, 0.52, 0.92]}, "carry_state": "carry"}
+  ],
+  "expected_classifications": [
+    {"object_id": "carry_inside_seed", "classification": "inside"},
+    {"object_id": "carry_bridge_horizontal", "classification": "intersecting"},
+    {"object_id": "carry_bridge_vertical", "classification": "intersecting"},
+    {"object_id": "resolved_inside_anchor", "classification": "inside"},
+    {"object_id": "carry_touch_min_x", "classification": "intersecting"},
+    {"object_id": "carry_touch_max_y", "classification": "intersecting"},
+    {"object_id": "resolved_outside_noise", "classification": "outside"},
+    {"object_id": "carry_outside_retained", "classification": "outside"},
+    {"object_id": "resolved_inside_small", "classification": "inside"},
+    {"object_id": "carry_intersect_z_clip", "classification": "inside"}
+  ],
+  "non_claims": ["Synthetic carry-retention visual sample only.", "No Don source files.", "No private traces or lab fixtures."]
+}
