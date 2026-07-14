@@ -15,9 +15,11 @@
     main { display:grid; grid-template-columns:minmax(320px, 1.25fr) minmax(280px, .75fr); gap:18px; padding:18px; }
     .panel { background:rgba(18,26,51,.93); border:1px solid var(--line); border-radius:18px; padding:16px; box-shadow:0 12px 40px rgba(0,0,0,.25); }
     .toolbar { display:grid; gap:10px; grid-template-columns:1fr; margin-bottom:14px; }
-    input[type=file] { width:100%; padding:12px; border-radius:12px; border:1px solid var(--line); background:#0e1730; color:var(--muted); }
+    input[type=file], select { width:100%; padding:12px; border-radius:12px; border:1px solid var(--line); background:#0e1730; color:var(--muted); }
     button, a.button { display:inline-flex; align-items:center; justify-content:center; border:1px solid var(--cyan); color:var(--ink); background:rgba(101,242,255,.12); padding:11px 13px; border-radius:12px; text-decoration:none; font-weight:650; cursor:pointer; }
+    button.primary, a.button.primary { border-color:var(--green); background:rgba(94,226,143,.13); }
     .buttons { display:flex; flex-wrap:wrap; gap:8px; }
+    .sample-grid { display:grid; grid-template-columns:1fr; gap:8px; padding:10px; border:1px solid var(--line); border-radius:14px; background:#0e1730; }
     .canvas-scroll { overflow-x:auto; border-radius:14px; border:1px solid var(--line); background:#071020; }
     #scene { width:1100px; height:760px; background:#071020; display:block; }
     .legend { display:grid; gap:8px; margin-top:12px; color:var(--muted); font-size:.95rem; }
@@ -31,13 +33,13 @@
     .bad { border-left-color: var(--red); }
     footer { padding: 18px 28px 30px; color:var(--muted); }
     .pill { display:inline-flex; margin:0 8px 8px 0; padding:6px 10px; border:1px solid var(--line); border-radius:999px; }
-    @media (max-width: 900px) { main { grid-template-columns:1fr; padding:14px; } header { padding:24px 16px 14px; } #scene { width:980px; height:700px; } .canvas-scroll { -webkit-overflow-scrolling: touch; } }
+    @media (max-width: 900px) { main { grid-template-columns:1fr; padding:14px; } header { padding:24px 16px 14px; } #scene { width:980px; height:700px; } .canvas-scroll { -webkit-overflow-scrolling: touch; } .buttons button, .buttons a { flex:1 1 100%; } }
   </style>
 </head>
 <body>
   <header>
     <h1>Visual Diagnostic Demo v1</h1>
-    <p><strong>Local loader:</strong> choose a public-safe JSON or JSONL file. Parsing happens in your browser only; files are not uploaded to a server. Private lab fixtures, JSONL outputs, and CI rails remain the source of truth.</p>
+    <p><strong>Local loader:</strong> choose a public-safe JSON or JSONL file, or load a built-in stress sample from this public repo. File-picker parsing happens in your browser only. Private lab fixtures, JSONL outputs, and CI rails remain the source of truth.</p>
   </header>
 
   <main>
@@ -46,9 +48,25 @@
       <div class="toolbar">
         <input id="fileInput" type="file" accept=".json,.jsonl,application/json" />
         <div class="buttons">
-          <button id="sampleSpec">Load sample SPEC-005 scene</button>
-          <button id="sampleQrrg">Load sample Q-RRG events</button>
+          <button id="sampleSpec">Load embedded SPEC-005 scene</button>
+          <button id="sampleQrrg">Load embedded Q-RRG events</button>
           <a class="button" href="../visual-diagnostic-demo-v0/">Static v0</a>
+        </div>
+        <div class="sample-grid">
+          <label for="sampleSelect"><strong>Built-in public stress samples</strong></label>
+          <select id="sampleSelect" aria-label="Built-in public stress sample selector">
+            <option value="sample-data/spec005_boundary_stress_scene_v0.json">SPEC-005 boundary stress scene</option>
+            <option value="sample-data/spec005_carry_retention_scene_v0.json">SPEC-005 carry-retention scene</option>
+            <option value="sample-data/qrrg_repair_stress_events_v0.jsonl">Q-RRG repair stress events</option>
+            <option value="sample-data/mixed_scene_qrrg_pair_spec005_scene_v0.json">Mixed pair scene JSON</option>
+            <option value="sample-data/mixed_scene_qrrg_pair_events_v0.jsonl">Mixed pair Q-RRG events JSONL</option>
+            <option value="sample-data/spec005_culling_scene_v0.json">Baseline SPEC-005 sample</option>
+            <option value="sample-data/qrrg_repair_events_v0.jsonl">Baseline Q-RRG sample</option>
+          </select>
+          <div class="buttons">
+            <button class="primary" id="loadRepoSample">Load selected built-in sample</button>
+            <a class="button" id="downloadSample" href="../sample-data/spec005_boundary_stress_scene_v0.json" download>Download selected sample</a>
+          </div>
         </div>
         <p id="status" class="status">Ready. Load a <code>spec005_culling_scene_v0</code> JSON fixture or <code>qrrg_repair_event_v0</code> JSONL event log.</p>
       </div>
@@ -67,9 +85,10 @@
 
     <aside class="panel cards">
       <div class="card"><strong>Supported now</strong><p><code>spec005_culling_scene_v0</code> JSON and <code>qrrg_repair_event_v0</code> JSONL.</p></div>
-      <div class="card"><strong>Local-only safety</strong><p>The browser reads your selected file with FileReader. The file does not leave the device.</p></div>
+      <div class="card"><strong>Built-in samples</strong><p>Use the selector to load stress data from this public repo without hunting for files.</p></div>
+      <div class="card"><strong>Local-only file picker</strong><p>When using Choose File, the browser reads the selected file with FileReader. It does not leave the device.</p></div>
       <div class="card"><strong>Still not proof</strong><p>This page visualizes public-safe data. It does not make performance, production, SDK, or private-kernel claims.</p></div>
-      <div class="card"><strong>Next</strong><p>Training Gym AABB/segment JSON support can be added after we settle the public-safe event fields.</p></div>
+      <div class="card"><strong>Next</strong><p>v2 can correlate matched scene objects and Q-RRG event addresses in one combined view.</p></div>
     </aside>
   </main>
 
@@ -84,10 +103,13 @@
     const canvas = document.getElementById('scene');
     const ctx = canvas.getContext('2d');
     const statusEl = document.getElementById('status');
+    const sampleSelect = document.getElementById('sampleSelect');
+    const downloadSample = document.getElementById('downloadSample');
     const colors = { inside:'#5ee28f', red:'#ff6b6b', blue:'#62a8ff', gold:'#ffd66b', violet:'#b58cff', cyan:'#65f2ff', line:'#44557f', text:'#f2f6ff', muted:'#aab7d6' };
     const sx = v => 90 + v * 760;
     const sy = v => 70 + v * 600;
     const label = (text, x, y, color = colors.text, size = 16) => { ctx.fillStyle = color; ctx.font = `${size}px ui-sans-serif, system-ui`; ctx.fillText(String(text), x, y); };
+    const sampleUrl = () => '../' + sampleSelect.value;
 
     const sampleSpec = {
       schema_version:'spec005_culling_scene_v0', fixture_id:'embedded_spec005_sample', cull_bounds:{mn:[.25,.25,.25], mx:[.75,.75,.75]},
@@ -173,9 +195,24 @@
         throw new Error('Unsupported JSONL event shape');
       } catch (err) { setStatus(`Could not load ${name}: ${err.message}`, 'bad'); drawBase('Load failed'); }
     }
+    async function loadRepoSample() {
+      const path = sampleSelect.value;
+      try {
+        setStatus(`Loading built-in sample ${path}...`);
+        const response = await fetch('../' + path, {cache:'no-store'});
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        loadText(await response.text(), path.split('/').pop());
+      } catch (err) {
+        setStatus(`Could not load built-in sample: ${err.message}`, 'bad');
+      }
+    }
+    function syncDownloadLink() { downloadSample.href = sampleUrl(); downloadSample.setAttribute('download', sampleSelect.value.split('/').pop()); }
     document.getElementById('fileInput').addEventListener('change', async (event) => { const file = event.target.files[0]; if (!file) return; loadText(await file.text(), file.name); });
     document.getElementById('sampleSpec').addEventListener('click', () => { drawSpec(sampleSpec); setStatus('Loaded embedded SPEC-005 sample scene.', 'ok'); });
     document.getElementById('sampleQrrg').addEventListener('click', () => { drawQrrg(sampleQrrg); setStatus('Loaded embedded Q-RRG sample events.', 'ok'); });
+    document.getElementById('loadRepoSample').addEventListener('click', loadRepoSample);
+    sampleSelect.addEventListener('change', syncDownloadLink);
+    syncDownloadLink();
     drawSpec(sampleSpec);
   </script>
 </body>
