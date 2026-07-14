@@ -1,0 +1,27 @@
+{
+  "schema_version": "spec005_culling_scene_v0",
+  "fixture_id": "public_spec005_sample",
+  "description": "Public-safe sample scene for the upload-enabled visual diagnostic demo.",
+  "geometry_kind": "aabb",
+  "node_bounds": {"mn": [0, 0, 0], "mx": [1, 1, 1]},
+  "cull_bounds": {"mn": [0.25, 0.25, 0.25], "mx": [0.75, 0.75, 0.75]},
+  "objects": [
+    {"id": "inside_core", "bounds": {"mn": [0.36, 0.36, 0.36], "mx": [0.48, 0.48, 0.48]}, "carry_state": "resolved"},
+    {"id": "intersect_left", "bounds": {"mn": [0.18, 0.38, 0.38], "mx": [0.32, 0.52, 0.52]}, "carry_state": "carry"},
+    {"id": "outside_left", "bounds": {"mn": [0.04, 0.60, 0.40], "mx": [0.16, 0.72, 0.52]}, "carry_state": "resolved"},
+    {"id": "intersect_top", "bounds": {"mn": [0.50, 0.68, 0.40], "mx": [0.62, 0.82, 0.52]}, "carry_state": "carry"},
+    {"id": "inside_upper", "bounds": {"mn": [0.62, 0.52, 0.55], "mx": [0.72, 0.62, 0.65]}, "carry_state": "resolved"}
+  ],
+  "expected_classifications": [
+    {"object_id": "inside_core", "classification": "inside"},
+    {"object_id": "intersect_left", "classification": "intersecting"},
+    {"object_id": "outside_left", "classification": "outside"},
+    {"object_id": "intersect_top", "classification": "intersecting"},
+    {"object_id": "inside_upper", "classification": "inside"}
+  ],
+  "non_claims": [
+    "Public sample only.",
+    "Not a private lab fixture.",
+    "Not a performance benchmark."
+  ]
+}
