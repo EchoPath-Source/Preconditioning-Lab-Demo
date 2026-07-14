@@ -185,9 +185,12 @@
       try {
         const trimmed = text.trim();
         if (!trimmed) throw new Error('Empty file');
-        if (trimmed.startsWith('{')) {
+        const lowerName = String(name).toLowerCase();
+        const looksLikeJsonl = lowerName.endsWith('.jsonl') || /\n\s*\{/.test(trimmed);
+        if (!looksLikeJsonl) {
           const obj = JSON.parse(trimmed);
           if (obj.schema_version === 'spec005_culling_scene_v0') { drawSpec(obj); setStatus(`Loaded ${name}: SPEC-005 scene with ${(obj.objects||[]).length} objects.`, 'ok'); return; }
+          if (Array.isArray(obj) && obj.length && obj.every(e => e.schema_version === 'qrrg_repair_event_v0' || e.qrrg_event || e.patch_type)) { drawQrrg(obj); setStatus(`Loaded ${name}: Q-RRG event array with ${obj.length} events.`, 'ok'); return; }
           throw new Error(`Unsupported JSON schema_version: ${obj.schema_version || 'missing'}`);
         }
         const events = parseJsonl(trimmed);
