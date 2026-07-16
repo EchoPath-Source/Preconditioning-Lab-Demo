@@ -9,56 +9,51 @@
     * { box-sizing: border-box; }
     body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: radial-gradient(circle at top left, #172349, var(--bg) 48%); color: var(--ink); }
     main { max-width: 1080px; margin: 0 auto; padding: 44px 22px; }
-    .panel { background: rgba(18,26,51,.93); border: 1px solid var(--line); border-radius: 24px; padding: clamp(22px, 4vw, 34px); box-shadow: 0 18px 56px rgba(0,0,0,.30); }
-    h1 { margin: 0 0 14px; font-size: clamp(2.1rem, 5.5vw, 4rem); line-height: 1.04; letter-spacing: -.03em; }
-    h2 { margin: 30px 0 12px; font-size: clamp(1.4rem, 3vw, 2rem); }
-    p { color: var(--muted); line-height: 1.62; font-size: clamp(1rem, 2vw, 1.12rem); }
-    a.button { display: inline-flex; margin: 18px 12px 0 0; padding: 14px 18px; border-radius: 15px; border: 1px solid var(--cyan); color: var(--ink); text-decoration: none; background: rgba(101,242,255,.13); font-weight: 650; }
-    a.button.primary { border-color: var(--green); background: rgba(94,226,143,.13); }
-    a.button.secondary { border-color: var(--line); background: rgba(255,255,255,.05); color: var(--muted); }
-    .chain { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
-    .step, .callout { border: 1px solid var(--line); border-radius: 17px; padding: 15px; background: #0e1730; }
-    .step strong, .callout strong { display:block; color: var(--ink); margin-bottom: 7px; }
-    .note { border-left: 4px solid var(--gold); padding-left: 16px; }
-    .twocol { display:grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
-    .yes { border-color: rgba(94,226,143,.45); }
-    .no { border-color: rgba(255,107,107,.40); }
-    code { color: var(--cyan); background:#081126; padding:2px 6px; border-radius:6px; }
-    ul { margin: 10px 0 0 20px; color: var(--muted); line-height: 1.65; padding: 0; }
-    footer { color: var(--muted); margin-top: 18px; text-align: center; font-size: .95rem; }
-    @media (max-width: 800px) { main { padding: 24px 14px; } .chain, .twocol { grid-template-columns: 1fr; } a.button { width: 100%; justify-content:center; } }
+    .panel { background: rgba(18,26,51,.93); border: 1px solid var(--line); border-radius: 24px; padding: clamp(22px, 4vw, 34px); box-shadow:0 18px 56px rgba(0,0,0,.3); }
+    h1 { margin:0 0 14px; font-size:clamp(2.1rem,5.5vw,4rem); line-height:1.04; letter-spacing:-.03em; }
+    h2 { margin:30px 0 12px; font-size:clamp(1.4rem,3vw,2rem); }
+    p { color:var(--muted); line-height:1.62; font-size:clamp(1rem,2vw,1.12rem); }
+    a.button { display:inline-flex; margin:18px 12px 0 0; padding:14px 18px; border-radius:15px; border:1px solid var(--cyan); color:var(--ink); text-decoration:none; background:rgba(101,242,255,.13); font-weight:650; }
+    a.primary { border-color:var(--green); background:rgba(94,226,143,.13); }
+    a.secondary { border-color:var(--line); background:rgba(255,255,255,.05); color:var(--muted); }
+    .chain { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin-top:18px; }
+    .step,.callout { border:1px solid var(--line); border-radius:17px; padding:15px; background:#0e1730; }
+    .step strong,.callout strong { display:block; color:var(--ink); margin-bottom:7px; }
+    .note { border-left:4px solid var(--gold); padding-left:16px; }
+    .twocol { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px; }
+    .yes { border-color:rgba(94,226,143,.45); }.no { border-color:rgba(255,107,107,.4); }
+    code { color:var(--cyan); background:#081126; padding:2px 6px; border-radius:6px; }
+    ul { margin:10px 0 0 20px; color:var(--muted); line-height:1.65; padding:0; }
+    footer { color:var(--muted); margin-top:18px; text-align:center; font-size:.95rem; }
+    @media(max-width:800px){main{padding:24px 14px}.chain,.twocol{grid-template-columns:1fr}a.button{width:100%;justify-content:center}}
   </style>
 </head>
-<body>
-  <main>
-    <section class="panel">
-      <h1>EchoPath Preconditioning Lab Demo</h1>
-      <p class="note"><strong>Public-safe visual mirror.</strong> The private lab keeps the tested fixtures, JSONL outputs, CI rails, and research intake. This repo only hosts dependency-free diagnostic projections.</p>
-      <a class="button primary" href="./visual-diagnostic-demo-v1/">Open Upload-Enabled Demo v1</a>
-      <a class="button" href="./visual-diagnostic-demo-v0/">Open Static Demo v0</a>
-      <a class="button secondary" href="https://github.com/EchoPath-Source/Preconditioning-Lab-Demo">View GitHub Repo</a>
+<body><main><section class="panel">
+  <h1>EchoPath Preconditioning Lab Demo</h1>
+  <p class="note"><strong>Public-safe visual mirror.</strong> Private fixtures, validators, kernel responses, and CI remain the sources of truth. This repository only hosts dependency-free diagnostic projections.</p>
+  <a class="button primary" href="./visual-diagnostic-demo-v2/">Open Bridge Correlation Demo v2</a>
+  <a class="button" href="./visual-diagnostic-demo-v1/">Open Local Loader v1</a>
+  <a class="button" href="./visual-diagnostic-demo-v0/">Open Static Demo v0</a>
+  <a class="button secondary" href="https://github.com/EchoPath-Source/Preconditioning-Lab-Demo">View GitHub Repo</a>
 
-      <h2>Current Spatial Intelligence Chain</h2>
-      <div class="chain">
-        <div class="step"><strong>AABB Training Gym</strong><p>Classifies spatial objects and boundary references.</p></div>
-        <div class="step"><strong>Segment / Beam Boundary</strong><p>Shows clean beams, carry states, face, center, and overflow cases.</p></div>
-        <div class="step"><strong>SPEC-005 Culling</strong><p>Shows what survives the culling region and what can be skipped.</p></div>
-        <div class="step"><strong>Q-RRG Repair</strong><p>Projects bridge accept, bridge reject, and fallback behavior.</p></div>
-      </div>
+  <h2>Current Spatial Intelligence Chain</h2>
+  <div class="chain">
+    <div class="step"><strong>AABB Training Gym</strong><p>Classifies spatial objects and boundary references.</p></div>
+    <div class="step"><strong>SPEC-005 Culling</strong><p>Shows what survives the culling region and what can be skipped.</p></div>
+    <div class="step"><strong>Kernel Bridge Events</strong><p>Translates route-card and kernel responses into public-safe diagnostic semantics.</p></div>
+    <div class="step"><strong>Bridge Console</strong><p>Correlates route, repair, fallback, and Harp class with visible scene objects.</p></div>
+  </div>
 
-      <h2>Upload-Enabled v1</h2>
-      <p>Demo v1 can load public-safe <code>spec005_culling_scene_v0</code> JSON or <code>qrrg_repair_event_v0</code> JSONL locally in the browser. There is no backend upload.</p>
+  <h2>Demo v2</h2>
+  <p>Loads a <code>spec005_culling_scene_v0</code> scene and <code>qrrg_preconditioning_bridge_event_v0</code> event stream together. Event addresses are matched to scene objects and rendered as solved, accepted, rejected/fallback, or repaired bridge decisions.</p>
 
-      <h2>What this shows</h2>
-      <div class="twocol">
-        <div class="callout yes"><strong>It shows the spine</strong><ul><li>preconditioning decides relevance,</li><li>culling skips safely,</li><li>carry preserves boundary truth,</li><li>Q-RRG repair responds to structure.</li></ul></div>
-        <div class="callout no"><strong>It does not claim</strong><ul><li>production runtime performance,</li><li>private kernel exposure,</li><li>renderer/GPU integration,</li><li>a public SDK or proof claim.</li></ul></div>
-      </div>
+  <h2>What this shows</h2>
+  <div class="twocol">
+    <div class="callout yes"><strong>It shows the product surface</strong><ul><li>route decisions become legible,</li><li>boundary and fallback state remain visible,</li><li>Harp class enriches repair semantics,</li><li>consumers use one source-agnostic bridge contract.</li></ul></div>
+    <div class="callout no"><strong>It does not claim</strong><ul><li>kernel #12 is solved,</li><li>production runtime performance,</li><li>private kernel exposure,</li><li>public SDK or physics validation.</li></ul></div>
+  </div>
 
-      <h2>Boundary</h2>
-      <p><code>private Preconditioning Lab fixtures / JSONL / CI</code> remain the source of truth. This site is a browser-readable diagnostic surface for sharing the concept safely.</p>
-    </section>
-    <footer>EchoPath Preconditioning Lab Demo · public-safe mirror</footer>
-  </main>
-</body>
+  <h2>Boundary</h2>
+  <p><code>product consumer → kernel adapter / route-card → bridge event stream → overlay/debug UI</code>. Product layers do not import Preconditioning Lab research internals, Don source material, or private Q-RRG kernel internals.</p>
+</section><footer>EchoPath Preconditioning Lab Demo · public-safe mirror</footer></main></body>
 </html>

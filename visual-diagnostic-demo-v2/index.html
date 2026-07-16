@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EchoPath Bridge Correlation Demo v2</title>
+<style>
+:root{color-scheme:dark;--bg:#09101f;--panel:#121b33;--ink:#f3f7ff;--muted:#aebbd7;--line:#2b3a5e;--green:#5ee28f;--red:#ff6b6b;--gold:#ffd66b;--blue:#62a8ff;--violet:#b58cff;--cyan:#65f2ff}*{box-sizing:border-box}body{margin:0;font-family:system-ui,sans-serif;background:radial-gradient(circle at top left,#17264c,var(--bg) 50%);color:var(--ink)}header{padding:26px 22px 15px;border-bottom:1px solid var(--line)}h1{margin:0 0 8px;font-size:clamp(1.8rem,5vw,3rem)}p{color:var(--muted);line-height:1.55}main{display:grid;grid-template-columns:minmax(360px,1.3fr) minmax(300px,.7fr);gap:16px;padding:16px}.panel{background:rgba(18,27,51,.95);border:1px solid var(--line);border-radius:18px;padding:15px}.controls{display:grid;gap:10px;margin-bottom:12px}.row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}input,button{width:100%;padding:11px;border-radius:11px;border:1px solid var(--line);background:#0c1630;color:var(--ink)}button{cursor:pointer;border-color:var(--cyan);background:rgba(101,242,255,.1);font-weight:700}.primary{border-color:var(--green);background:rgba(94,226,143,.12)}canvas{display:block;width:100%;min-width:820px;background:#071020}.scroll{overflow:auto;border:1px solid var(--line);border-radius:14px}.cards{display:grid;gap:10px}.card{padding:12px;border:1px solid var(--line);border-radius:13px;background:#0c1630}.event{border-left:4px solid var(--violet)}.event.ok{border-left-color:var(--green)}.event.bad{border-left-color:var(--red)}.pill{display:inline-block;padding:4px 8px;margin:2px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:.84rem}.status{padding:10px;border-left:4px solid var(--gold);background:#0c1630}.boundary{border-left-color:var(--cyan)}code{color:var(--cyan)}@media(max-width:900px){main{grid-template-columns:1fr}.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><h1>Bridge Correlation Demo v2</h1><p>Loads a public-safe scene JSON and <code>qrrg_preconditioning_bridge_event_v0</code> JSONL together, then optionally correlates a <code>qrrg_harp_repair_event_v0</code> log for residual enrichment.</p></header>
+<main>
+<section class="panel">
+<div class="controls">
+<div class="row">
+<label>Scene JSON<input id="sceneFile" type="file" accept=".json,application/json"></label>
+<label>Bridge JSONL<input id="eventFile" type="file" accept=".jsonl,.json,application/json"></label>
+<label>Optional Harp JSONL<input id="harpFile" type="file" accept=".jsonl,.json,application/json"></label>
+</div>
+<div class="row"><button id="loadBuiltIn" class="primary">Load built-in correlated sample</button><button id="clear">Clear</button></div>
+<div id="status" class="status" aria-live="polite">Ready. Files are parsed locally in the browser; no backend upload.</div>
+</div>
+<div class="scroll"><canvas id="canvas" width="980" height="680"></canvas></div>
+</section>
+<aside class="panel cards">
+<div class="card boundary"><strong>Source-of-truth boundary</strong><p>Private fixtures, validators, kernel responses, and CI remain authoritative. This page is a public-safe projection only.</p></div>
+<div class="card"><strong>Render mapping</strong><p><span class="pill">no_repair_needed + transport</span> solved route<br><span class="pill">bridge_accept + transport</span> clean local link<br><span class="pill">bridge_reject + fallback + unknown</span> disconnected no-path<br><span class="pill">repair_success + component_bridge + seam/carry</span> repaired stress-route bridge</p></div>
+<div id="summary" class="card"><strong>Correlation summary</strong><p>No scene or events loaded.</p></div>
+<div id="events" class="cards"></div>
+<div class="card"><strong>Safety boundary</strong><p>No private kernel traces, Don source files, private lab fixtures, backend upload, SDK claim, or benchmark claim.</p></div>
+</aside>
+</main>
+<script>
+const canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d'),statusEl=document.getElementById('status'),summaryEl=document.getElementById('summary'),eventsEl=document.getElementById('events');
+let scene=null,events=[],harpEvents=[];const colors={inside:'#5ee28f',intersecting:'#ffd66b',outside:'#ff6b6b',carry:'#62a8ff',line:'#405176',text:'#f3f7ff',muted:'#aebbd7',accept:'#5ee28f',reject:'#ff6b6b',repair:'#b58cff',none:'#65f2ff'};
+const sx=v=>70+v*680,sy=v=>55+v*540;
+function label(t,x,y,c=colors.text,s=14){ctx.fillStyle=c;ctx.font=`${s}px system-ui`;ctx.fillText(String(t),x,y)}
+function parseJsonl(text){return text.split(/\r?\n/).filter(x=>x.trim()).map((line,i)=>{try{return JSON.parse(line)}catch(e){throw new Error(`JSONL line ${i+1}: ${e.message}`)}})}
+function classify(obj,cull){const a=obj.bounds.mn,b=obj.bounds.mx,m=cull.mn,x=cull.mx;if(b[0]<m[0]||a[0]>x[0]||b[1]<m[1]||a[1]>x[1])return'outside';if(a[0]>=m[0]&&b[0]<=x[0]&&a[1]>=m[1]&&b[1]<=x[1])return'inside';return'intersecting'}
+function objectMap(){return new Map((scene?.objects||[]).map(o=>[String(o.id),o]))}
+function harpMap(){return new Map(harpEvents.map(e=>[String(e.query_id||`${e.from_address}|${e.to_address}|${e.qrrg_event}`),e]))}
+function eventColor(e){if(e.qrrg_event==='bridge_reject')return colors.reject;if(e.qrrg_event==='repair_success')return colors.repair;if(e.qrrg_event==='bridge_accept')return colors.accept;return colors.none}
+function eventMeaning(e){if(e.qrrg_event==='no_repair_needed'&&e.harp_class==='transport')return'Solved route / no repair needed';if(e.qrrg_event==='bridge_accept'&&e.harp_class==='transport')return'Accepted segment / clean local link';if(e.qrrg_event==='bridge_reject'&&e.patch_type==='fallback'&&e.harp_class==='unknown')return'No-path / disconnected component failure';if(e.qrrg_event==='repair_success'&&e.patch_type==='component_bridge'&&['seam','carry'].includes(e.harp_class))return'Future repaired stress-route bridge';return'Diagnostic bridge event'}
+function center(o){return[(o.bounds.mn[0]+o.bounds.mx[0])/2,(o.bounds.mn[1]+o.bounds.mx[1])/2]}
+function draw(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.strokeStyle=colors.line;ctx.lineWidth=2;ctx.strokeRect(sx(0),sy(0),680,540);label('Correlated scene + bridge-event projection',70,30,colors.text,18);if(!scene){label('Load a scene and bridge event log.',90,95,colors.muted,17);return}const cull=scene.cull_bounds||{mn:[.25,.25,.25],mx:[.75,.75,.75]};ctx.save();ctx.setLineDash([8,8]);ctx.strokeStyle=colors.none;ctx.strokeRect(sx(cull.mn[0]),sy(cull.mn[1]),(cull.mx[0]-cull.mn[0])*680,(cull.mx[1]-cull.mn[1])*540);ctx.restore();const map=objectMap();for(const o of scene.objects||[]){if(!o.bounds)continue;const cls=classify(o,cull),c=o.carry_state==='carry'?colors.carry:colors[cls],x=sx(o.bounds.mn[0]),y=sy(o.bounds.mn[1]),w=(o.bounds.mx[0]-o.bounds.mn[0])*680,h=(o.bounds.mx[1]-o.bounds.mn[1])*540;ctx.fillStyle=c+'44';ctx.strokeStyle=c;ctx.fillRect(x,y,w,h);ctx.strokeRect(x,y,w,h);label(o.id,x,y-5,c,12)}for(const e of events){const a=map.get(String(e.from_address)),b=map.get(String(e.to_address));if(!a||!b)continue;const p=center(a),q=center(b);ctx.strokeStyle=eventColor(e);ctx.lineWidth=e.qrrg_event==='repair_success'?5:3;ctx.beginPath();ctx.moveTo(sx(p[0]),sy(p[1]));ctx.lineTo(sx(q[0]),sy(q[1]));ctx.stroke();label(e.qrrg_event,(sx(p[0])+sx(q[0]))/2,(sy(p[1])+sy(q[1]))/2-7,eventColor(e),12)}}
+function appendText(parent,tag,text,className=''){const node=document.createElement(tag);if(className)node.className=className;node.textContent=String(text);parent.appendChild(node);return node}
+function renderCards(){const map=objectMap(),hm=harpMap();const matched=events.filter(e=>map.has(String(e.from_address))&&map.has(String(e.to_address))).length;summaryEl.replaceChildren();appendText(summaryEl,'strong','Correlation summary');appendText(summaryEl,'p',`${scene?(scene.objects||[]).length:0} scene objects · ${events.length} bridge events · ${matched} address pairs matched · ${harpEvents.length} Harp residual events.`);eventsEl.replaceChildren();for(const base of events){const h=hm.get(String(base.request_id))||hm.get(`${base.from_address}|${base.to_address}|${base.qrrg_event}`);const e={...base,harp_class:h?.harp_class||base.harp_class,harp_residual:h?.harp_residual};const d=document.createElement('div');d.className='card event '+(e.status==='ok'?'ok':'bad');appendText(d,'strong',e.qrrg_event);appendText(d,'p',eventMeaning(e));appendText(d,'span',e.patch_type,'pill');appendText(d,'span',`Harp: ${e.harp_class}`,'pill');if(e.harp_residual!==undefined)appendText(d,'span',`Residual: ${e.harp_residual}`,'pill');appendText(d,'span',`${e.from_address} → ${e.to_address}`,'pill');if(e.no_path_reason){const p=document.createElement('p');appendText(p,'code',e.no_path_reason);d.appendChild(p)}eventsEl.appendChild(d)}}
+function refresh(){draw();renderCards();statusEl.textContent=`Loaded ${scene?'scene':'no scene'}, ${events.length} bridge event(s), and ${harpEvents.length} Harp event(s).`}
+async function read(file,kind){if(!file)return;const text=await file.text();if(kind==='scene'){const v=JSON.parse(text);if(v.schema_version!=='spec005_culling_scene_v0')throw new Error('Expected spec005_culling_scene_v0 scene JSON');scene=v}else if(kind==='events'){const v=parseJsonl(text);if(v.some(e=>e.schema_version!=='qrrg_preconditioning_bridge_event_v0'))throw new Error('Expected qrrg_preconditioning_bridge_event_v0 JSONL');events=v}else{const v=parseJsonl(text);if(v.some(e=>e.schema_version!=='qrrg_harp_repair_event_v0'))throw new Error('Expected qrrg_harp_repair_event_v0 JSONL');harpEvents=v}refresh()}
+document.getElementById('sceneFile').addEventListener('change',e=>read(e.target.files[0],'scene').catch(x=>statusEl.textContent=x.message));
+document.getElementById('eventFile').addEventListener('change',e=>read(e.target.files[0],'events').catch(x=>statusEl.textContent=x.message));
+document.getElementById('harpFile').addEventListener('change',e=>read(e.target.files[0],'harp').catch(x=>statusEl.textContent=x.message));
+document.getElementById('loadBuiltIn').addEventListener('click',async()=>{try{const [s,e,h]=await Promise.all([fetch('../sample-data/spec005_culling_scene_v0.json'),fetch('../sample-data/qrrg_preconditioning_bridge_events_v0.jsonl'),fetch('../sample-data/qrrg_harp_repair_events_v0.jsonl')]);if(!s.ok||!e.ok||!h.ok)throw new Error('Unable to load one or more built-in samples');scene=await s.json();events=parseJsonl(await e.text());harpEvents=parseJsonl(await h.text());refresh()}catch(x){statusEl.textContent=x.message}});
+document.getElementById('clear').addEventListener('click',()=>{scene=null;events=[];harpEvents=[];refresh()});draw();
+</script>
+</body></html>
