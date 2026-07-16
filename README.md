@@ -2,71 +2,69 @@
 
 Public-safe visual diagnostic mirror for the EchoPath Preconditioning Lab.
 
-This repository is intentionally small. It publishes browser-viewable demos while keeping the main Preconditioning Lab repository private.
+This repository publishes browser-viewable diagnostic projections while the private Preconditioning Lab and private Q-RRG kernel remain the tested sources of truth.
 
-## Live Demo
+## Live Demos
 
+```text
 Landing page:
-
-```text
 https://echopath-source.github.io/Preconditioning-Lab-Demo/
-```
 
-Static visual diagnostic route:
+Demo v2 — scene and bridge-event correlation:
+https://echopath-source.github.io/Preconditioning-Lab-Demo/visual-diagnostic-demo-v2/
 
-```text
-https://echopath-source.github.io/Preconditioning-Lab-Demo/visual-diagnostic-demo-v0/
-```
-
-Upload-enabled local loader route:
-
-```text
+Demo v1 — local single-file loader:
 https://echopath-source.github.io/Preconditioning-Lab-Demo/visual-diagnostic-demo-v1/
+
+Demo v0 — static diagnostic projection:
+https://echopath-source.github.io/Preconditioning-Lab-Demo/visual-diagnostic-demo-v0/
 ```
 
 ## Source-of-Truth Boundary
 
 ```text
-private Preconditioning Lab fixtures / JSONL / CI = truth
-this public repo = visual diagnostic projection only
+private Preconditioning Lab fixtures / validators / CI = diagnostic contract truth
+private Q-RRG kernel responses / tests = route and repair truth
+this public repo = public-safe visual projection only
 ```
 
-The browser canvas is not the source of correctness. It is a public-safe visualization of the tested spatial-intelligence chain.
+The browser canvas is not a correctness source and does not establish product validation.
 
-## Current Visual Chain
+## Demo v2: Bridge Correlation
 
-```text
-AABB Training Gym
--> segment / beam boundary behavior
--> SPEC-005 culling / frustum
--> Q-RRG repair event projection
-```
-
-## Upload-Enabled v1
-
-Visual Diagnostic Demo v1 supports local-only browser loading for public-safe files:
+Demo v2 loads these inputs together:
 
 ```text
 spec005_culling_scene_v0 JSON
-qrrg_repair_event_v0 JSONL
+qrrg_preconditioning_bridge_event_v0 JSONL
+optional future qrrg_harp_repair_event_v0 JSONL enrichment
 ```
 
-The file picker reads local files with the browser FileReader API. It is not uploaded to a backend server.
+It correlates `from_address` and `to_address` with scene object IDs and renders the public-safe mapping:
 
-v1 also includes a built-in stress-sample selector. These built-in samples are fetched from this public repository's `sample-data/` directory and rendered directly in the browser, so users do not need to manually download files just to test the demo.
+```text
+no_repair_needed + transport
+  -> solved route / no repair needed
+
+bridge_accept + transport
+  -> accepted segment / clean local link
+
+bridge_reject + fallback + unknown
+  -> no-path / disconnected component failure
+
+repair_success + component_bridge + seam or carry
+  -> future repaired stress-route bridge
+```
+
+The file picker uses the browser FileReader API. Files are not uploaded to a backend.
 
 ## Sample Data
 
-Baseline samples:
+Baseline and stress scenes/events:
 
 ```text
 sample-data/spec005_culling_scene_v0.json
 sample-data/qrrg_repair_events_v0.jsonl
-```
-
-Public-safe stress samples for EchoPath Preconditioning Lab Demo v1:
-
-```text
 sample-data/spec005_boundary_stress_scene_v0.json
 sample-data/spec005_carry_retention_scene_v0.json
 sample-data/qrrg_repair_stress_events_v0.jsonl
@@ -74,68 +72,62 @@ sample-data/mixed_scene_qrrg_pair_spec005_scene_v0.json
 sample-data/mixed_scene_qrrg_pair_events_v0.jsonl
 ```
 
-The stress samples are synthetic and intentionally small enough for browser loading. They cover boundary-touching, inside, outside, intersecting, carry retention, bridge accept, bridge reject, fallback, repair fail, and repair success cases without private lab fixtures, Don source files, or private kernel traces.
-
-### Download and Test Stress Samples
-
-From the live v1 page, use the built-in stress-sample selector and click:
+Demo v2 bridge-event fixture:
 
 ```text
-Load selected built-in sample
+sample-data/qrrg_preconditioning_bridge_events_v0.jsonl
 ```
 
-To download a sample instead, use the adjacent download button or open a URL such as:
+All samples are synthetic and public-safe. They do not contain private lab fixtures, Don source files, private kernel traces, or backend credentials.
 
-```text
-https://echopath-source.github.io/Preconditioning-Lab-Demo/sample-data/spec005_boundary_stress_scene_v0.json
-https://echopath-source.github.io/Preconditioning-Lab-Demo/sample-data/qrrg_repair_stress_events_v0.jsonl
-```
-
-From a local checkout, run:
+## Local Test
 
 ```sh
 python3 -m http.server 8000
 ```
 
-Then open the v1 loader and use either the built-in selector or the file picker to load any stress sample from `sample-data/`:
+Then open:
 
 ```text
-http://localhost:8000/visual-diagnostic-demo-v1/
+http://localhost:8000/visual-diagnostic-demo-v2/
 ```
 
-Quick schema checks from the repository root:
+Quick fixture checks:
 
 ```sh
-python3 -m json.tool sample-data/spec005_boundary_stress_scene_v0.json >/dev/null
-python3 -m json.tool sample-data/spec005_carry_retention_scene_v0.json >/dev/null
 python3 -m json.tool sample-data/mixed_scene_qrrg_pair_spec005_scene_v0.json >/dev/null
 python3 - <<'PY'
 import json
 from pathlib import Path
 for path in [
+    Path('sample-data/qrrg_preconditioning_bridge_events_v0.jsonl'),
     Path('sample-data/qrrg_repair_stress_events_v0.jsonl'),
-    Path('sample-data/mixed_scene_qrrg_pair_events_v0.jsonl'),
 ]:
     with path.open() as fh:
         for line_number, line in enumerate(fh, 1):
             if line.strip():
-                event = json.loads(line)
-                assert event.get('schema_version') == 'qrrg_repair_event_v0', (path, line_number)
-print('JSONL stress samples parsed successfully')
+                json.loads(line)
+print('JSONL fixtures parsed successfully')
 PY
 ```
 
-## What the Demo Shows
+## Architecture Boundary
+
+Correct downstream flow:
 
 ```text
-unit cube / spatial field,
-AABB objects,
-segment / beam objects,
-red / blue carry states,
-face / center / overflow states,
-SPEC-005 culling region,
-inside / intersecting / outside states,
-Q-RRG bridge accept / reject / fallback events.
+product consumer
+-> kernel adapter / route-card response
+-> qrrg_preconditioning_bridge_event_v0 stream
+-> overlay / debugger / report
+```
+
+Forbidden coupling:
+
+```text
+product consumer -> Preconditioning Lab experimental source
+product consumer -> Don research files
+product consumer -> private qrrg_kernel internals
 ```
 
 ## What Is Not Included
@@ -145,21 +137,17 @@ no private research notes,
 no Don source files,
 no private Q-RRG kernel,
 no production runtime,
-no public SDK,
-no Blender/Ogre/OpenGL dependency,
-no npm/bundler dependency,
+no public SDK guarantee,
+no product benchmark claim,
+no Hodge or physics proof claim,
 no backend upload.
 ```
 
 ## GitHub Pages Setup
 
-Use repository settings:
-
 ```text
 Settings -> Pages
 Source: Deploy from a branch
 Branch: main
-Folder: /root
+Folder: / (root)
 ```
-
-If GitHub displays the folder option as `/ (root)`, choose that.
