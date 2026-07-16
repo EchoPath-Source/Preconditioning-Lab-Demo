@@ -10,7 +10,7 @@ This repository publishes browser-viewable diagnostic projections while the priv
 Landing page:
 https://echopath-source.github.io/Preconditioning-Lab-Demo/
 
-Demo v2 — scene and bridge-event correlation:
+Demo v2 — scene, bridge-event, and optional Harp residual correlation:
 https://echopath-source.github.io/Preconditioning-Lab-Demo/visual-diagnostic-demo-v2/
 
 Demo v1 — local single-file loader:
@@ -37,7 +37,7 @@ Demo v2 loads these inputs together:
 ```text
 spec005_culling_scene_v0 JSON
 qrrg_preconditioning_bridge_event_v0 JSONL
-optional future qrrg_harp_repair_event_v0 JSONL enrichment
+optional qrrg_harp_repair_event_v0 JSONL enrichment
 ```
 
 It correlates `from_address` and `to_address` with scene object IDs and renders the public-safe mapping:
@@ -56,7 +56,7 @@ repair_success + component_bridge + seam or carry
   -> future repaired stress-route bridge
 ```
 
-The file picker uses the browser FileReader API. Files are not uploaded to a backend.
+The file pickers use the browser FileReader API. Files are not uploaded to a backend. User-provided event fields are rendered through DOM text nodes rather than `innerHTML`.
 
 ## Sample Data
 
@@ -72,10 +72,12 @@ sample-data/mixed_scene_qrrg_pair_spec005_scene_v0.json
 sample-data/mixed_scene_qrrg_pair_events_v0.jsonl
 ```
 
-Demo v2 bridge-event fixture:
+Demo v2 correlated fixtures:
 
 ```text
+sample-data/spec005_culling_scene_v0.json
 sample-data/qrrg_preconditioning_bridge_events_v0.jsonl
+sample-data/qrrg_harp_repair_events_v0.jsonl
 ```
 
 All samples are synthetic and public-safe. They do not contain private lab fixtures, Don source files, private kernel traces, or backend credentials.
@@ -95,12 +97,13 @@ http://localhost:8000/visual-diagnostic-demo-v2/
 Quick fixture checks:
 
 ```sh
-python3 -m json.tool sample-data/mixed_scene_qrrg_pair_spec005_scene_v0.json >/dev/null
+python3 -m json.tool sample-data/spec005_culling_scene_v0.json >/dev/null
 python3 - <<'PY'
 import json
 from pathlib import Path
 for path in [
     Path('sample-data/qrrg_preconditioning_bridge_events_v0.jsonl'),
+    Path('sample-data/qrrg_harp_repair_events_v0.jsonl'),
     Path('sample-data/qrrg_repair_stress_events_v0.jsonl'),
 ]:
     with path.open() as fh:
