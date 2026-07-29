@@ -2,45 +2,46 @@
 
 Public-safe visual diagnostic mirror for the EchoPath Preconditioning Lab.
 
-This repository publishes browser-viewable diagnostic projections while the private Preconditioning Lab and private Q-RRG kernel remain the tested sources of truth.
+The private Preconditioning Lab owns diagnostic contracts and validation. The private Q-RRG kernel owns route and repair truth. This repository only renders synthetic or explicitly projected public-safe artifacts.
 
-## Live Demos
+## Demo status
+
+```text
+v0 = static diagnostic viewer — complete
+v1 = local JSON/JSONL loader + stress fixtures — complete
+v2 = scene, bridge-event and Harp correlation — complete
+v3 = kernel bridge replay console — specified and deferred
+```
+
+V3 is recorded in `docs/PUBLIC_DEMO_V3_DEFERRED_ROADMAP.md`. It is not a prerequisite for the E-Tree Translation and CASE Library bootstrap.
+
+## Live demos
 
 ```text
 Landing page:
 https://echopath-source.github.io/Preconditioning-Lab-Demo/
 
-Demo v2 — scene, bridge-event, and optional Harp residual correlation:
+Demo v2:
 https://echopath-source.github.io/Preconditioning-Lab-Demo/visual-diagnostic-demo-v2/
 
-Demo v1 — local single-file loader:
+Demo v1:
 https://echopath-source.github.io/Preconditioning-Lab-Demo/visual-diagnostic-demo-v1/
 
-Demo v0 — static diagnostic projection:
+Demo v0:
 https://echopath-source.github.io/Preconditioning-Lab-Demo/visual-diagnostic-demo-v0/
 ```
 
-## Source-of-Truth Boundary
+## Demo v2 contract
 
-```text
-private Preconditioning Lab fixtures / validators / CI = diagnostic contract truth
-private Q-RRG kernel responses / tests = route and repair truth
-this public repo = public-safe visual projection only
-```
-
-The browser canvas is not a correctness source and does not establish product validation.
-
-## Demo v2: Bridge Correlation
-
-Demo v2 loads these inputs together:
+Inputs:
 
 ```text
 spec005_culling_scene_v0 JSON
 qrrg_preconditioning_bridge_event_v0 JSONL
-optional qrrg_harp_repair_event_v0 JSONL enrichment
+optional qrrg_harp_repair_event_v0 JSONL
 ```
 
-It correlates `from_address` and `to_address` with scene object IDs and renders the public-safe mapping:
+Render mapping:
 
 ```text
 no_repair_needed + transport
@@ -53,14 +54,12 @@ bridge_reject + fallback + unknown
   -> no-path / disconnected component failure
 
 repair_success + component_bridge + seam or carry
-  -> future repaired stress-route bridge
+  -> repaired stress-route bridge representation
 ```
 
-The file pickers use the browser FileReader API. Files are not uploaded to a backend. User-provided event fields are rendered through DOM text nodes rather than `innerHTML`.
+The file pickers use local browser APIs. Files are not uploaded. User-provided values are inserted through text nodes rather than unsafe HTML.
 
-## Sample Data
-
-Baseline and stress scenes/events:
+## Sample data
 
 ```text
 sample-data/spec005_culling_scene_v0.json
@@ -70,83 +69,56 @@ sample-data/spec005_carry_retention_scene_v0.json
 sample-data/qrrg_repair_stress_events_v0.jsonl
 sample-data/mixed_scene_qrrg_pair_spec005_scene_v0.json
 sample-data/mixed_scene_qrrg_pair_events_v0.jsonl
-```
-
-Demo v2 correlated fixtures:
-
-```text
-sample-data/spec005_culling_scene_v0.json
 sample-data/qrrg_preconditioning_bridge_events_v0.jsonl
 sample-data/qrrg_harp_repair_events_v0.jsonl
 ```
 
-All samples are synthetic and public-safe. They do not contain private lab fixtures, Don source files, private kernel traces, or backend credentials.
+All samples are synthetic and public-safe.
 
-## Local Test
+## Architecture boundary
 
-```sh
-python3 -m http.server 8000
-```
-
-Then open:
+Correct flow:
 
 ```text
-http://localhost:8000/visual-diagnostic-demo-v2/
-```
-
-Quick fixture checks:
-
-```sh
-python3 -m json.tool sample-data/spec005_culling_scene_v0.json >/dev/null
-python3 - <<'PY'
-import json
-from pathlib import Path
-for path in [
-    Path('sample-data/qrrg_preconditioning_bridge_events_v0.jsonl'),
-    Path('sample-data/qrrg_harp_repair_events_v0.jsonl'),
-    Path('sample-data/qrrg_repair_stress_events_v0.jsonl'),
-]:
-    with path.open() as fh:
-        for line_number, line in enumerate(fh, 1):
-            if line.strip():
-                json.loads(line)
-print('JSONL fixtures parsed successfully')
-PY
-```
-
-## Architecture Boundary
-
-Correct downstream flow:
-
-```text
-product consumer
--> kernel adapter / route-card response
--> qrrg_preconditioning_bridge_event_v0 stream
+kernel adapter / route-card response
+-> versioned public-safe bridge events
 -> overlay / debugger / report
 ```
 
 Forbidden coupling:
 
 ```text
-product consumer -> Preconditioning Lab experimental source
-product consumer -> Don research files
-product consumer -> private qrrg_kernel internals
+public demo -> Preconditioning experimental source
+public demo -> Don research files
+public demo -> private qrrg_kernel internals
+public demo -> arbitrary raw kernel diagnostics
 ```
 
-## What Is Not Included
+## Local test
+
+```sh
+python3 -m http.server 8000
+```
+
+Open:
 
 ```text
-no private research notes,
-no Don source files,
-no private Q-RRG kernel,
-no production runtime,
-no public SDK guarantee,
-no product benchmark claim,
-no Hodge or physics proof claim,
-no backend upload.
+http://localhost:8000/visual-diagnostic-demo-v2/
 ```
 
-## GitHub Pages Setup
+## Non-claims
+
+```text
+no private research notes
+no private Q-RRG kernel
+no production runtime
+no public SDK guarantee
+no product benchmark claim
+no Hodge or physics proof claim
+no backend upload
+```
+
+## GitHub Pages
 
 ```text
 Settings -> Pages
