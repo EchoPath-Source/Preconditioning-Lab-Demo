@@ -3,57 +3,62 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>EchoPath Preconditioning Lab Demo</title>
+  <title>EchoPath Preconditioning — Public Diagnostic Lab</title>
   <style>
-    :root { color-scheme: dark; --bg:#0b1020; --panel:#121a33; --ink:#f2f6ff; --muted:#aab7d6; --line:#283657; --cyan:#65f2ff; --green:#5ee28f; --gold:#ffd66b; --red:#ff6b6b; }
-    * { box-sizing: border-box; }
-    body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: radial-gradient(circle at top left, #172349, var(--bg) 48%); color: var(--ink); }
-    main { max-width: 1080px; margin: 0 auto; padding: 44px 22px; }
-    .panel { background: rgba(18,26,51,.93); border: 1px solid var(--line); border-radius: 24px; padding: clamp(22px, 4vw, 34px); box-shadow:0 18px 56px rgba(0,0,0,.3); }
-    h1 { margin:0 0 14px; font-size:clamp(2.1rem,5.5vw,4rem); line-height:1.04; letter-spacing:-.03em; }
-    h2 { margin:30px 0 12px; font-size:clamp(1.4rem,3vw,2rem); }
-    p { color:var(--muted); line-height:1.62; font-size:clamp(1rem,2vw,1.12rem); }
-    a.button { display:inline-flex; margin:18px 12px 0 0; padding:14px 18px; border-radius:15px; border:1px solid var(--cyan); color:var(--ink); text-decoration:none; background:rgba(101,242,255,.13); font-weight:650; }
-    a.primary { border-color:var(--green); background:rgba(94,226,143,.13); }
-    a.secondary { border-color:var(--line); background:rgba(255,255,255,.05); color:var(--muted); }
-    .chain { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin-top:18px; }
-    .step,.callout { border:1px solid var(--line); border-radius:17px; padding:15px; background:#0e1730; }
-    .step strong,.callout strong { display:block; color:var(--ink); margin-bottom:7px; }
-    .note { border-left:4px solid var(--gold); padding-left:16px; }
-    .twocol { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px; }
-    .yes { border-color:rgba(94,226,143,.45); }.no { border-color:rgba(255,107,107,.4); }
-    code { color:var(--cyan); background:#081126; padding:2px 6px; border-radius:6px; }
-    ul { margin:10px 0 0 20px; color:var(--muted); line-height:1.65; padding:0; }
-    footer { color:var(--muted); margin-top:18px; text-align:center; font-size:.95rem; }
-    @media(max-width:800px){main{padding:24px 14px}.chain,.twocol{grid-template-columns:1fr}a.button{width:100%;justify-content:center}}
+    :root{color-scheme:dark;--bg:#030b12;--panel:#0d1925;--raised:#101f2e;--inset:#071019;--control:#142638;--text:#f4f8fb;--secondary:#a9bac7;--muted:#7f94a8;--line:rgba(232,239,245,.12);--line-strong:rgba(232,239,245,.22);--cyan:#29ffd2;--field:#7ca7ff;--violet:#b695ff;--gold:#ffbd59;--safe:#80e8b2;--danger:#ff7c7c}
+    *{box-sizing:border-box}html{background:var(--bg)}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:radial-gradient(circle at 78% -12%,rgba(104,72,168,.22),transparent 34%),radial-gradient(circle at 12% 5%,rgba(62,111,168,.14),transparent 28%),linear-gradient(180deg,#050d15,var(--bg) 46%);min-height:100vh}
+    a{color:inherit}.shell{width:min(1420px,calc(100% - 40px));margin:auto;padding:34px 0 64px}.hero{padding-bottom:30px;border-bottom:1px solid var(--line)}.eyebrow,.kicker{margin:0 0 8px;color:var(--violet);letter-spacing:.16em;text-transform:uppercase;font-size:.7rem;font-weight:850}.hero h1{margin:0;font-size:clamp(2.7rem,7vw,5.3rem);line-height:.96;letter-spacing:-.045em}.lede{max-width:900px;margin:18px 0 0;color:var(--secondary);font-size:1.08rem;line-height:1.65}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}.button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:11px 14px;border:1px solid var(--line);border-radius:10px;background:var(--control);text-decoration:none;font-weight:760}.button.primary{background:var(--cyan);color:#03100d;border-color:rgba(41,255,210,.7)}.button.secondary{color:var(--violet);border-color:rgba(182,149,255,.34);background:rgba(182,149,255,.06)}.button:hover{border-color:var(--line-strong);background:#183048}.button.primary:hover{background:#56ffdc}.button:focus-visible{outline:3px solid var(--field);outline-offset:3px}
+    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:22px}.panel{border:1px solid var(--line);border-radius:16px;background:linear-gradient(155deg,rgba(16,31,46,.95),rgba(8,19,29,.97));padding:20px}.panel h2{margin:6px 0 8px;font-size:1.38rem}.panel p,.small{color:var(--secondary);line-height:1.58}.status{display:inline-flex;padding:6px 9px;border:1px solid rgba(182,149,255,.34);border-radius:999px;color:var(--violet);font-size:.66rem;font-weight:850;letter-spacing:.1em;text-transform:uppercase;background:rgba(182,149,255,.06)}
+    .flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:18px}.step{position:relative;border:1px solid var(--line);border-radius:12px;background:rgba(13,25,37,.72);padding:14px}.step strong{display:block;font-size:.84rem}.step span{display:block;margin-top:5px;color:var(--muted);font-size:.76rem;line-height:1.45}.step:not(:last-child)::after{content:"→";position:absolute;right:-9px;top:50%;transform:translate(50%,-50%);color:var(--field);font-weight:900}
+    .section{margin-top:18px}.split{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}.boundary{border-left:3px solid var(--gold)}.good{border-left:3px solid var(--safe)}.danger{border-left:3px solid var(--danger)}code{font-family:"Geist Mono",ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--cyan);background:rgba(3,11,18,.7);padding:2px 6px;border-radius:6px}ul{margin:8px 0 0 18px;padding:0;color:var(--secondary);line-height:1.62}footer{margin-top:22px;color:var(--muted);text-align:center;font-size:.84rem}
+    @media(max-width:980px){.grid{grid-template-columns:1fr 1fr}.flow{grid-template-columns:1fr 1fr}.step:nth-child(2)::after{display:none}.split{grid-template-columns:1fr}}
+    @media(max-width:700px){.shell{width:min(100% - 28px,1420px);padding-top:22px}.grid,.flow{grid-template-columns:1fr}.step::after{display:none}.actions{flex-direction:column}.button{width:100%}.panel{padding:16px}.hero h1{font-size:clamp(2.55rem,15vw,4.2rem)}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
   </style>
 </head>
-<body><main><section class="panel">
-  <h1>EchoPath Preconditioning Lab Demo</h1>
-  <p class="note"><strong>Public-safe visual mirror.</strong> Private fixtures, validators, kernel responses, and CI remain the sources of truth. This repository only hosts dependency-free diagnostic projections.</p>
-  <a class="button primary" href="./visual-diagnostic-demo-v2/">Open Bridge Correlation Demo v2</a>
-  <a class="button" href="./visual-diagnostic-demo-v1/">Open Local Loader v1</a>
-  <a class="button" href="./visual-diagnostic-demo-v0/">Open Static Demo v0</a>
-  <a class="button secondary" href="https://github.com/EchoPath-Source/Preconditioning-Lab-Demo">View GitHub Repo</a>
+<body>
+<main class="shell">
+  <section class="hero">
+    <p class="eyebrow">EchoPath / Preconditioning</p>
+    <h1>Make spatial decisions legible.</h1>
+    <p class="lede">Public-safe diagnostic surfaces for inspecting scene structure, bridge decisions, repair and fallback state, and the evidence that explains why a spatial route was accepted, rejected, or repaired.</p>
+    <div class="actions">
+      <a class="button primary" href="./visual-diagnostic-demo-v2/">Open Bridge Correlation v2</a>
+      <a class="button secondary" href="./visual-diagnostic-demo-v1/">Open Local Loader v1</a>
+      <a class="button" href="./visual-diagnostic-demo-v0/">Open Static Demo v0</a>
+      <a class="button" href="https://github.com/EchoPath-Source/Preconditioning-Lab-Demo">Public repo</a>
+    </div>
+  </section>
 
-  <h2>Current Spatial Intelligence Chain</h2>
-  <div class="chain">
-    <div class="step"><strong>AABB Training Gym</strong><p>Classifies spatial objects and boundary references.</p></div>
-    <div class="step"><strong>SPEC-005 Culling</strong><p>Shows what survives the culling region and what can be skipped.</p></div>
-    <div class="step"><strong>Kernel Bridge Events</strong><p>Translates route-card and kernel responses into public-safe diagnostic semantics.</p></div>
-    <div class="step"><strong>Bridge Console</strong><p>Correlates route, repair, fallback, and Harp class with visible scene objects.</p></div>
-  </div>
+  <section class="grid" aria-label="Preconditioning surfaces">
+    <article class="panel"><span class="status">Primary demo</span><h2>Bridge Correlation</h2><p>Correlate scene objects with public-safe bridge events and optional Harp residual evidence. Inspect accepted, rejected, fallback, and repaired decisions.</p></article>
+    <article class="panel"><span class="status">Inspection</span><h2>Visible provenance</h2><p>Keep object identity, culling state, route semantics, and event addresses readable so a consumer can trace the decision rather than trust a black box.</p></article>
+    <article class="panel"><span class="status">Boundary</span><h2>Protected internals</h2><p>The public demo projects diagnostic semantics only. Private fixtures, validators, kernel responses, research internals, and CI remain authoritative.</p></article>
+  </section>
 
-  <h2>Demo v2</h2>
-  <p>Loads a <code>spec005_culling_scene_v0</code> scene and <code>qrrg_preconditioning_bridge_event_v0</code> event stream together. Event addresses are matched to scene objects and rendered as solved, accepted, rejected/fallback, or repaired bridge decisions.</p>
+  <section class="panel section">
+    <p class="kicker">Spatial intelligence chain</p>
+    <h2>From structure to explainable decision</h2>
+    <div class="flow">
+      <div class="step"><strong>AABB Training Gym</strong><span>Classify objects and boundary references.</span></div>
+      <div class="step"><strong>SPEC-005 Culling</strong><span>Determine what survives the active region.</span></div>
+      <div class="step"><strong>Kernel Bridge Events</strong><span>Translate route-card or kernel output into diagnostic semantics.</span></div>
+      <div class="step"><strong>Bridge Console</strong><span>Correlate route, repair, fallback, Harp class, and visible geometry.</span></div>
+    </div>
+  </section>
 
-  <h2>What this shows</h2>
-  <div class="twocol">
-    <div class="callout yes"><strong>It shows the product surface</strong><ul><li>route decisions become legible,</li><li>boundary and fallback state remain visible,</li><li>Harp class enriches repair semantics,</li><li>consumers use one source-agnostic bridge contract.</li></ul></div>
-    <div class="callout no"><strong>It does not claim</strong><ul><li>kernel #12 is solved,</li><li>production runtime performance,</li><li>private kernel exposure,</li><li>public SDK or physics validation.</li></ul></div>
-  </div>
+  <section class="split section">
+    <article class="panel good"><p class="kicker">What the demo shows</p><h2>Inspectable product behavior</h2><ul><li>route decisions become visible and comparable,</li><li>boundary and fallback state stay explicit,</li><li>Harp class can enrich repair semantics,</li><li>consumers see one source-agnostic bridge contract.</li></ul></article>
+    <article class="panel danger"><p class="kicker">What it does not claim</p><h2>Public-safe limits</h2><ul><li>kernel #12 is solved,</li><li>production runtime performance,</li><li>private kernel exposure,</li><li>public SDK or physics validation.</li></ul></article>
+  </section>
 
-  <h2>Boundary</h2>
-  <p><code>product consumer → kernel adapter / route-card → bridge event stream → overlay/debug UI</code>. Product layers do not import Preconditioning Lab research internals, Don source material, or private Q-RRG kernel internals.</p>
-</section><footer>EchoPath Preconditioning Lab Demo · public-safe mirror</footer></main></body>
+  <section class="panel boundary section">
+    <p class="kicker">Boundary</p>
+    <h2>Readable projection, protected source of truth</h2>
+    <p class="small"><code>product consumer → kernel adapter / route-card → bridge event stream → overlay/debug UI</code>. Product layers do not import private Preconditioning Lab research internals, Don source material, or private Q-RRG kernel internals.</p>
+  </section>
+
+  <footer>EchoPath Preconditioning Lab Demo · public-safe diagnostic mirror</footer>
+</main>
+</body>
 </html>
