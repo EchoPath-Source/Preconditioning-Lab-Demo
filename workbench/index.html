@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Preconditioning Workbench | EchoPath Demo Lab</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif;background:#050e17;color:#f4f8fc}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 0%,#192b49,transparent 55%),#050e17}
+main{max-width:900px;margin:auto;padding:clamp(24px,6vw,72px) 20px}
+a{color:#67f5d7}a:focus-visible{outline:3px solid #67f5d7;outline-offset:4px}
+.eyebrow{color:#b6a0ff;letter-spacing:.12em;text-transform:uppercase;font-size:.8rem}
+h1{font-size:clamp(2rem,6vw,4rem);line-height:1.1}p,li{line-height:1.65;color:#b8cbd9}
+.panel{border:1px solid #31465a;border-radius:16px;padding:24px;background:#102031;margin-top:24px}
+.status{font-size:.8rem;font-weight:750;color:#ffce7b}
+.links{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
+.links a{padding:12px 16px;border:1px solid #47647b;border-radius:9px;text-decoration:none}
+</style></head><body><main>
+<a href="../">← Back to Diagnostic Lab</a>
+<p class="eyebrow">EchoPath / Preconditioning</p>
+<h1>Native Workbench</h1>
+<p>Inspect and validate graph edits through a preview-and-apply workflow. The underlying reference Workbench is developed and tested in the Preconditioning Lab; this public Demo Lab will host the reviewed interactive experience once its isolated backend is deployed and validated.</p>
+<section class="panel" aria-labelledby="status"><div class="status">Integration in progress · no hosted session available</div>
+<h2 id="status">What is available today?</h2>
+<p>The native Workbench supports workspace inspection, preview, confirmed apply, and revision history in the Lab's local development environment. This public page does not connect to that environment and does not claim live native execution.</p>
+<p>The existing visual diagnostic demos remain available while the hosted Workbench is prepared.</p>
+<div class="links"><a href="../visual-diagnostic-demo-v2/">Open Bridge Correlation v2</a><a href="../visual-diagnostic-demo-v1/">Open Local Loader v1</a></div>
+</section>
+<section class="panel"><h2>Next validation milestone</h2>
+<p>Deploy an isolated HTTPS staging runtime, verify two independent visitor sessions, and test Open → Preview → Apply → Undo → Redo → Reload in a real browser. Only then enable a public launch link.</p>
+<p><a href="../docs/WORKBENCH_BRIDGE_INTEGRATION.md">Read the integration contract</a></p>
+</section></main></body></html>
