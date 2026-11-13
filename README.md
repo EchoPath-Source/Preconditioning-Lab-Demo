@@ -4,6 +4,10 @@ Public-safe visual diagnostic mirror for the EchoPath Preconditioning Lab.
 
 The private Preconditioning Lab owns diagnostic contracts and validation. The private Q-RRG kernel owns route and repair truth. This repository only renders synthetic or explicitly projected public-safe artifacts.
 
+## Workbench integration track
+
+The Native Workbench is being bridged from the Preconditioning Lab into this public Demo Lab. The [Workbench landing page](workbench/) describes current status; it is **not yet a live native demo**. The [cross-repository integration contract](docs/WORKBENCH_BRIDGE_INTEGRATION.md) defines security, disclosure, and deployment gates. Existing v0–v2 demos remain unchanged; the separately deferred v3 replay console is not being represented as complete.
+
 ## Demo status
 
 ```text
